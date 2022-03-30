@@ -5,19 +5,16 @@ import io
 import base64
 
 def preview_window():
-    image = Image.open('/Users/melodyhalbert/Desktop/your_ouput/stitchmod.jpg')
-    image.thumbnail((520, 300))
-    bio = io.BytesIO()
-    image.save(bio, format="jpeg")
+    filename = 'stitchmod.jpg'
+    im = Image.open(filename)
+    im.thumbnail((633, 322))
+    im.save('stichmod.png')
+    layout = [[sg.Image('stichmod.png')], [sg.Text('file name here')]]
 
-    layout = [[sg.Image(image, key='-IMAGE-')]]
-    window = sg.Window('Image Review', layout, size = (600,600))
-
-    while True:
-        button, values = window.read()
-        if button == sg.WIN_CLOSED:
-            break
+    window = sg.Window('Image Review', layout, size = (660,400), element_justification='center')
+    event = window.read()
     window.close()
+    return
 
 
 def run_model():
@@ -25,23 +22,26 @@ def run_model():
     font_stats = 'Arial 12 bold'
     banner_color = '#4d4d73'
     background_color = '#ebecf5'
-
-    clean = [sg.Text('Clean:', font=font,  background_color = background_color), sg.Text('69',  background_color = '#f0efbb', font=font_stats)]
-    cracked = [sg.Text('Cracked:', font=font,  background_color = background_color), sg.Text('3',  background_color = '#f0efbb', font=font_stats)]
-    highlighted = [sg.Text('Highlighted Cells:',  background_color = background_color, font=font), sg.Text('45, 52, 58',  background_color = '#f0efbb', font=font_stats)]
+    font_highlight = '#f0efbb'
 
     layout = [
         [sg.Text('Results', size=(950,1), font = 'Sana 22', text_color = 'white', background_color = banner_color, justification = 'center')],
         [sg.Text('Summary Report', font='Arial 15 bold',  background_color = background_color)],
         [sg.Text('Time Submitted: 12:44:03 pm   Location: Orlando, Florida',font=font,  background_color = background_color)],
         [sg.Text('default: crack area above (0.05)', font = font, background_color = background_color)],
-        [clean, cracked],
-        [highlighted],
-        [sg.Text('_'*500,font=font,pad=(10,10),  background_color = background_color)],
+        [sg.Text('_'*500,font=font,pad=(8,10),  background_color = background_color)],
+        [sg.Text('module1.png', font='Arial 12 underline', background_color = background_color)],
+        [sg.Text('Clean:', font=font,  background_color = background_color),
+                sg.Text('69',  background_color = font_highlight, font=font_stats),
+                sg.Text('Cracked:', font=font,  background_color = background_color),
+                sg.Text('3',  background_color = font_highlight, font=font_stats)],
+        [sg.Text('Highlighted Cells:',  background_color = background_color, font=font), sg.Text('45, 52, 58',  background_color = font_highlight, font=font_stats)],
+        [sg.Text('Module Grade: ', background_color = background_color, font=font_stats), sg.Text('FAIL', font=font_stats, background_color = background_color, text_color='red')],
+        [sg.Text('_'*500,font=font,pad=(8,10),  background_color = background_color)],
         [sg.Text('Preview', font='Arial 15 bold',  background_color = background_color)],
         [sg.Text('sort by: ',  background_color = background_color), sg.Checkbox('Clean',  background_color = background_color), sg.Checkbox('Cracked',  background_color = background_color)],
         [sg.Button('Preview')],
-        [sg.Text('_'*500,font=font,pad=(10,10),  background_color = background_color)],
+        [sg.Text('_'*500,font=font,pad=(8,10),  background_color = background_color)],
         [sg.Button('Save Results')],
         [sg.Button('Return to Home')] # add check for 'are you sure?'
     ]
@@ -52,7 +52,7 @@ def run_model():
         button, values = window.read()
         if button == sg.WIN_CLOSED:
             break
-        if button == 'Review Results':
+        if button == 'Preview':
             preview_window()
         if button == 'Save Results':
             sg.Popup('Results Saved.')
@@ -62,9 +62,10 @@ def run_model():
                 break
             else:
                 sg.Popup('Results not saved. Are you sure?')
+                break
 
     window.close()
-
+    return
 
 
 
@@ -91,9 +92,10 @@ def home_page():
         [sg.Text('Select a model from the drop down menu.', background_color=section_color, font=font)],
         [sg.Combo(values=models, default_value=models[0], key='model', font=font, size=(20,1),
                   pad=((10,50),(10,10))),
+                  sg.Text('Report Statistics:', font=font,background_color=section_color),
                   sg.Checkbox('Cell Counts', font=font, background_color = section_color),
-                  sg.Checkbox('Highlighted Cells',  font=font,background_color = section_color),
-                  sg.Checkbox('Category 3', font=font, background_color = section_color)],
+                  sg.Checkbox('Highlighted Cells',  font=font,background_color = section_color)],
+        [sg.Text(' '*109,background_color=section_color),sg.Text('Sort by:',font=font,background_color=section_color), sg.Checkbox('Total Defect Area',font=font,background_color=section_color), sg.Checkbox('Total Number of Defected Cells',font=font,background_color=section_color)],
     ]
 
     frame = [[sg.Text('')]]
@@ -118,9 +120,8 @@ def home_page():
     ]
 
     file_select_col = sg.Column(file_select_layout, background_color=section_color, size=(400,400), element_justification='l')
-    model_select_col = sg.Column(model_select_layout,  background_color=section_color, size=(1200,100), element_justification='l')
+    model_select_col = sg.Column(model_select_layout,  background_color=section_color, size=(1200,125), element_justification='l')
     input_display_col = sg.Column(input_display_layout, background_color = section_color, size = (800,400), element_justification='l')
-    #output_display_col = sg.Column([[sg.Frame('Results', output_display_layout, border_width = border_width, font = header_font)]])
 
     layout = [
         [sg.Text('Home', size=(1200,1), font = 'Sathu 22', text_color = 'white', background_color = banner_color, justification = 'center')],
