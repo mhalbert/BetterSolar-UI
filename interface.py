@@ -5,38 +5,61 @@ import io
 import base64
 import image_viewer
 import time
+# to do:
+# provide in documentation of PNGs or GIFS limitation with PYSIMPLEGUI
+# write helper function for image flip through, reusing code in two functions below
+# add PASS FAIL CHECKBOX FUNCTIONALITY
+# maybe have the default select file structure as Select All, to minimize clicking from user
+# highlighting all contents of listbox is something that needs to be done via Tkinter
 
 # preview processed cells/modules
 # TODO: give an output folder, flip through images
-def preview_window():
+def preview_window(files):
     # design variables
     button_font='Menlo 12'
     text_color='#1a385c'
 
-    filename = 'stitchmod.jpg'
-    im = Image.open(filename)
-    im.thumbnail((633, 322))
-    im.save('stichmod.png')
-
     SYMBOL_UP =    '▲'
     SYMBOL_DOWN =  '▼'
+
     input_button_layout = [
-        [sg.Text('', key = 'FILENAME', font='Sathu 11 underline', text_color='#1a385c')],
         [sg.Button(SYMBOL_UP,pad=(5,5)), sg.Button(SYMBOL_DOWN,pad=(5,5))],
     ]
 
+    path = 'testuifiles/'   #  temp for now, determine path based on output of model
+    bio=image_viewer.display(path,files[0])
+    data=bio.getvalue()
+
+    image_layout = [
+        [sg.Image(data,key='-IMAGE-')],
+        [sg.Text(files[0], size=(660,None), key = '-FILENAME-', font='Sathu 11 underline', text_color='#1a385c', justification='c')]
+    ]
+
     layout = [
-        [sg.Image('stichmod.png')],
+        [image_layout],
         [input_button_layout],
     ]
+
     window = sg.Window('Image Review', layout, size = (660,400), element_justification='center')
+
+    image_counter = 0
+    num_files = len(files)
+
     while True:
         button, values = window.read()
         if button == sg.WIN_CLOSED:
             break
-        #if button == SYMBOL_UP:
-        window['FILENAME'].update(filename[0])
-
+        if button == SYMBOL_UP:
+            image_counter -=1
+            if image_counter < 0:
+                image_counter = num_files + image_counter
+        if button == SYMBOL_DOWN:
+            image_counter += 1
+            if image_counter >= num_files:
+                image_counter -= num_files
+        window['-FILENAME-'].update(files[image_counter])
+        bio = image_viewer.display(path,files[image_counter])
+        window['-IMAGE-'].update(data=bio.getvalue())
 
     window.close()
     return
@@ -54,7 +77,7 @@ def results_window(files,model):
     current_time=time.strftime("%H:%M:%S", t)
 
     # TO DO: link to model ouput
-    modules = ['module1', 'module2', 'module3', 'module4', 'module5', 'module6', 'module7']
+    modules = files
     output_select_layout = [
         [sg.Listbox(values=modules, enable_events=True, font=font, size=(20,6), key="-FILES LIST-", pad=(10,5))],
     ]
@@ -74,14 +97,14 @@ def results_window(files,model):
     layout = [
         [sg.Text('Results', size=(950,1), font = 'Sana 22', text_color = 'white', background_color = banner_color, justification = 'center')],
         [sg.Text('Summary Report', font='Arial 15 bold',  background_color = background_color)],
-        [sg.Text('Time Submitted: ',font=font,  background_color = background_color), (sg.Text(current_time, font=font,  background_color = background_color))],
-        [sg.Text('Selected Model: ' + model, font = font, background_color = background_color)],
+        [sg.Text('Time Submitted:\t' + current_time,font=font,  background_color = background_color)],
+        [sg.Text('Selected Model:\t' + model, font = font, background_color = background_color)],
         [sg.Text('_'*500,font=font,pad=(8,8),  background_color = background_color)],
         [sg.Text('Select a module below to view results.',font=font,  background_color = background_color )],
         [listbox_col, info_col],
         [sg.Text('_'*500,font=font,pad=(8,8),  background_color = background_color)],
-        [sg.Text('Preview', font='Arial 15 bold',  background_color = background_color)],
-        [sg.Text('sort by: ',  background_color = background_color), sg.Checkbox('Clean',  background_color = background_color), sg.Checkbox('Cracked',  background_color = background_color)],
+        [sg.Text('Preview All Images', font='Arial 15 bold',  background_color = background_color)],
+        [sg.Text('sort by: ',  background_color = background_color), sg.Checkbox('Pass',  background_color = background_color), sg.Checkbox('Fail',  background_color = background_color)],
         [sg.Button('Preview')],
         [sg.Text('_'*500,font=font,pad=(8,8),  background_color = background_color)],
         [sg.Button('Save Results')],
@@ -95,7 +118,7 @@ def results_window(files,model):
         if button == sg.WIN_CLOSED:
             break
         if button == 'Preview':
-            preview_window()
+            preview_window(files)
         if button == 'Save Results':
             sg.Popup('Results Saved.')
             saved = True
@@ -105,6 +128,7 @@ def results_window(files,model):
             else:
                 sg.Popup('Results not saved. Are you sure?')
                 break
+        # add PASS FAIL CHECKBOX FUNCTIONALITY
 
     window.close()
     return
@@ -117,23 +141,23 @@ def home_page():
     header_font = 'Sathu 20 bold'
     font = 'Sathu 13'
     border_width = 5
-    section_color = '#ebecf5'
+    section_color = '#f2f3fc'
     button_font='Menlo 12'
     banner_color = '#4d4d73'
 
 
     file_select_layout = [
         [sg.Text('Upload Files',  background_color = section_color, font=header_font)],
-        [sg.Text('Folder:', font=font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-'), sg.FolderBrowse(font=button_font, pad=(10,10), )],
-        [sg.Text('File(s):', font = font, pad=(10,1), background_color = section_color)],
-        [sg.Listbox(values=[], enable_events=True, font='Any 12', select_mode = 'multiple', size=(40,15), key="-FILES LIST-", pad=(10,1))], #sg.Text('Selected:', font=font, background_color = '#d1d8e0')],
-        [sg.Checkbox('Select All', key = '-ALL-', background_color = section_color, font=font, pad=(10,1))],
-        [sg.Checkbox('Clear All', key='-CLEAR-', background_color = section_color, font=font, pad=(10,1))],
+        [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-'), sg.FolderBrowse(font=button_font, pad=(10,10), )],
+        [sg.Text('File(s):', font = font, pad=((10,1),(1,1)), background_color = section_color),
+                 sg.Text('Manually select from below or check "Select All."', font='Sathu 11', background_color = section_color)],
+        [sg.Listbox(values = [], enable_events = True, font = 'Any 12', select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
+        [sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
     ]
 
     model_select_layout = [
         [sg.Text('Processing Settings',  background_color = section_color, font=header_font)],
-        [sg.Text('Select a model from the drop down menu.', background_color=section_color, font=font)],
+        [sg.Text('Select a model from the drop down menu.', background_color=section_color, font='Sathu 11')],
         [sg.Combo(values=models, default_value=models[0], key='-MODEL-', font=font, size=(20,1),
                   pad=((10,50),(10,10))),
                   sg.Text('Report Statistics:', font=font,background_color=section_color),
@@ -155,7 +179,7 @@ def home_page():
     ]
     input_display_layout = [
         [sg.Text("Preview Files:", pad = (10,None), font=header_font, background_color = section_color)],
-        [sg.Text('Click "preview" to begin. Use the arrow keys to flip through your selected files.', pad = (10, None), font = font, background_color = section_color)],
+        [sg.Text('Click "preview" to begin. Use the arrow keys to flip through your selected files.', pad = (10, None), font='Sathu 11', background_color = section_color)],
         [sg.Frame('', image_layout, size = (633,322), pad=(10,10), background_color = '#D8D8D8', element_justification='c'),
                 sg.Column(input_button_layout, background_color=section_color)],
     ]
@@ -183,7 +207,7 @@ def home_page():
         if event == sg.WIN_CLOSED:
             break
             # implement Quit function
-        if event == 'Main Menu':
+        if event == 'Back to Menu':
             break
         if event == '-FOLDER-':
             folder = values['-FOLDER-']
@@ -191,23 +215,24 @@ def home_page():
                 file_list = os.listdir(folder)
             except:
                 file_list = []
-            fnames = [ f for f in file_list if os.path.isfile(os.path.join(folder,f)) and f.lower().endswith(('.png'))]
+            fnames = [ f for f in file_list if os.path.isfile(os.path.join(folder,f)) and f.lower().endswith(('.png'))]     # png requirement?
             window['-FILES LIST-'].update(fnames)
         if event == 'Run':
-            files = values['-FILES LIST-']
+            if values['-ALL-'] == True:
+                folder = values['-FOLDER-']
+                files = [ f for f in file_list if os.path.isfile(os.path.join(folder,f)) and f.lower().endswith(('.png'))]
+            else:
+                files = values['-FILES LIST-']
             if not files:
-                sg.Popup('Select files.')
+                sg.Popup('Select files to begin.', font=font, no_titlebar=True)
             else:
                 results_window(files,values['-MODEL-'])
-        if event == '-FILES LIST-':         # something from the listbox
-            continue
-        if event == '-ALL-':
-            files = values['-FILES LIST-']
-            values['-FILES LIST-'].update(files)
-        if event == '-CLEAR-':
-            values['-FILES LIST-'].update([])
         if event == "Preview":
-            files = values["-FILES LIST-"]  # todo: implement image flipthrough
+            if values['-ALL-'] == True:
+                folder = values['-FOLDER-']
+                files = [ f for f in file_list if os.path.isfile(os.path.join(folder,f)) and f.lower().endswith(('.png'))]
+            else:
+                files = values['-FILES LIST-']
             path = values['-FOLDER-'] + '/'
             if not files:
                 sg.Popup('Select a file to preview.')
@@ -215,9 +240,13 @@ def home_page():
                 bio = image_viewer.display(path,files[0])
                 window["-IMAGE-"].update(data=bio.getvalue())
                 window['FILENAME'].update(files[0])
-        if event == SYMBOL_DOWN and len(values['-FILES LIST-'])>1:
+        if event == SYMBOL_DOWN and (len(values['-FILES LIST-'])>1 or values['-ALL-'] == True):
             image_counter += 1
-            files=values['-FILES LIST-']
+            if values['-ALL-'] == True:
+                folder = values['-FOLDER-']
+                files = [ f for f in file_list if os.path.isfile(os.path.join(folder,f)) and f.lower().endswith(('.png'))]
+            else:
+                files = values['-FILES LIST-']
             path = values['-FOLDER-'] + '/'
             num_files=len(files)
             if image_counter >= num_files:
@@ -225,9 +254,13 @@ def home_page():
             window['FILENAME'].update(files[image_counter])
             bio = image_viewer.display(path,files[image_counter])
             window['-IMAGE-'].update(data=bio.getvalue())
-        if event == SYMBOL_UP and len(values['-FILES LIST-'])>1:
+        if event == SYMBOL_UP and (len(values['-FILES LIST-'])>1 or values['-ALL-'] == True):
             image_counter -= 1
-            files=values['-FILES LIST-']
+            if values['-ALL-'] == True:
+                folder = values['-FOLDER-']
+                files = [ f for f in file_list if os.path.isfile(os.path.join(folder,f)) and f.lower().endswith(('.png'))]
+            else:
+                files = values['-FILES LIST-']
             path = values['-FOLDER-'] + '/'
             num_files=len(files)
             if image_counter < 0:
@@ -267,7 +300,7 @@ def main():
         #[sg.Frame('',image_layout, size=(600,315), pad=(10,10))],
         [sg.Button('Launch', font=button_font, pad=(10,10))],
         [sg.Button('Help', font=button_font, pad=(10,10))],
-        [sg.Button('Library', font=button_font, pad=(10,10))],
+        [sg.Button('Contact', font=button_font, pad=(10,10))],
         [sg.Text('Better Solar, 2022', size=(500,1), font = 'Sathu 12', text_color = 'white', background_color = banner_color, justification = 'center', pad=((1,1),(30,1)))],
     ]
 
@@ -281,9 +314,9 @@ def main():
             window.Hide()
             home_page()
             window.UnHide()
-        if button == 'Report Issues/Help':
+        if button == 'Help':
             sg.Popup('Contact Info')
-        if button == 'Library':
+        if button == 'Contact':
             sg.Popup('Previous work?')
 
 
