@@ -5,6 +5,8 @@ import io
 import base64
 import image_viewer
 import time
+import glob2
+
 
 # preview processed cells/modules
 # TODO: give an output folder, flip through images
@@ -53,16 +55,27 @@ def results_window(files,model):
     t = time.localtime()
     current_time=time.strftime("%H:%M:%S", t)
 
+    # TODO: give user method to change path (messing with things apologies)
+    image_path = 'images/*'
+    module_folders = glob2.glob(image_path)
+    modules = []
+    for fold in module_folders:
+        cells = glob2.glob(fold + '/*')
+        for cell in cells:
+            if '_module' in cell:
+                modules.append(cell.split('/')[2])
+    print(modules)
     # TO DO: link to model ouput
-    modules = ['module1', 'module2', 'module3', 'module4', 'module5', 'module6', 'module7']
+
+    # modules = ['module1', 'module2', 'module3', 'module4', 'module5', 'module6', 'module7']
     output_select_layout = [
         [sg.Listbox(values=modules, enable_events=True, font=font, size=(20,6), key="-FILES LIST-", pad=(10,5))],
     ]
     single_report_layout = [
         [sg.Text('Clean:', font=font,  background_color = background_color),
-                sg.Text('',  key = '-CLEAN-', background_color = background_color, font=font_stats), # update value per module
-                sg.Text('Cracked:', font=font,  background_color = background_color),
-                sg.Text('',  key = '-CRACKED-', background_color = background_color, font=font_stats)], # update value per module
+         sg.Text('',  key = '-CLEAN-', background_color = background_color, font=font_stats), # update value per module
+         sg.Text('Cracked:', font=font,  background_color = background_color),
+         sg.Text('',  key = '-CRACKED-', background_color = background_color, font=font_stats)], # update value per module
         [sg.Text('Highlighted Cells:',  background_color = background_color, font=font), sg.Text('',  key='-HIGHLIGHTED CELLS-', background_color = background_color, font=font_stats)],
         [sg.Text('Module Grade: ', background_color = background_color, font=font_stats), sg.Text('', key='-GRADE-', font=font_stats, background_color = background_color)],
     ]
