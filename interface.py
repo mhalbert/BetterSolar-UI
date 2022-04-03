@@ -4,6 +4,7 @@ from PIL import Image
 import io
 import base64
 import time
+import ntpath
 # files
 import file_manager
 import contact
@@ -14,13 +15,15 @@ import save_results
 # add PASS FAIL CHECKBOX FUNCTIONALITY
 # maybe have the default select file structure as Select All, to minimize clicking from user
 # highlighting all contents of listbox is something that needs to be done via Tkinter
+# TODO: check linux and windows comp.
+
 UP =    '▲'
 RIGHT = '►'
 DOWN =  '▼'
 LEFT =  '◄'
 # preview processed cells/modules
 # TODO: give an output folder, flip through images
-def preview_window(output_path,files):
+def preview_window(output_path,files, module):
     # design variables
     button_font='Menlo 12'
     text_color='#1a385c'
@@ -31,13 +34,21 @@ def preview_window(output_path,files):
         [sg.Button(SYMBOL_UP,pad=(5,5)), sg.Button(SYMBOL_DOWN,pad=(5,5))],
     ]
 
-    path = output_path  #  TODO: temp for now, determine path based on output of model
-    bio=file_manager.display(path,files[0])
+    # depends on multiple cells or single module viewing
+    path = output_path #  TODO: temp for now, determine path based on output of model
+    if module:
+        bio=file_manager.display_output(path,files, module)
+        filename=files
+    else:
+        bio=file_manager.display_output(path,files[0], module)
+        filename=files[0]
+
+
     data=bio.getvalue()
 
     image_layout = [
         [sg.Image(data,key='-IMAGE-')],
-        [sg.Text(files[0], size=(660,None), key = '-FILENAME-', font='Sathu 11 underline', text_color='#1a385c', justification='c')]
+        [sg.Text(filename, size=(660,None), key = '-FILENAME-', font='Sathu 11 underline', text_color='#1a385c', justification='c')]
     ]
 
     layout = [
@@ -48,23 +59,26 @@ def preview_window(output_path,files):
     window = sg.Window('Image Review', layout, size = (660,400), element_justification='center')
 
     image_counter = 0
-    num_files = len(files)
+    num_files = 1
+    if not isinstance(files, str):
+        num_files = len(files)
 
     while True:
         button, values = window.read()
         if button == sg.WIN_CLOSED:
             break
-        if button == SYMBOL_UP:
+        if button == SYMBOL_UP and num_files > 1:
             image_counter -=1
             if image_counter < 0:
                 image_counter = num_files + image_counter
-        if button == SYMBOL_DOWN:
+        if button == SYMBOL_DOWN and num_files > 1:
             image_counter += 1
             if image_counter >= num_files:
                 image_counter -= num_files
-        window['-FILENAME-'].update(files[image_counter])
-        bio = file_manager.display(path,files[image_counter])
-        window['-IMAGE-'].update(data=bio.getvalue())
+        if num_files > 1:
+            window['-FILENAME-'].update(files[image_counter])
+            bio = file_manager.display_output(path,files[image_counter], False)
+            window['-IMAGE-'].update(data=bio.getvalue())
 
     window.close()
     return
@@ -84,24 +98,27 @@ def results_window(output_path,model):
     current_time=time.strftime("%H:%M:%S", t)
 
     # TO DO: link to model ouput
-    file_list = os.listdir(output_path)
-    files = file_manager.get_filenames(output_path,file_list)
+    cells = output_path + '/cells'
+    file_list = os.listdir(cells)
+    files = file_manager.get_filenames(cells,file_list)
     output_select_layout = [
         [sg.Listbox(values=files, enable_events=True, font='Arial 12', size=(20,6), key="-FILES LIST-", pad=(10,5))],
     ]
     single_report_layout = [
-        [sg.Text('Clean:', font=font,  background_color = background_color),
-            sg.Text('',  key = '-CLEAN-', background_color = background_color, font=font_stats), # update value per module
-            sg.Text('Cracked:', font=font,  background_color = background_color),
+        [sg.Text('Area Cracked (%):', font=font,  background_color = background_color),
             sg.Text('',  key = '-CRACKED-', background_color = background_color, font=font_stats)], # update value per module
-        [sg.Text('Highlighted Cells:',  background_color = background_color, font=font),
-            sg.Text('',  key='-HIGHLIGHTED CELLS-', background_color = background_color, font=font_stats)],
-        [sg.Text('Module Grade: ', background_color = background_color, font=font),
-            sg.Text('', key='-GRADE-', font=font_stats, background_color = background_color)],
+        [sg.Text('Contact (%):',  background_color = background_color, font=font),
+            sg.Text('',  key='-CONTACT-', background_color = background_color, font=font_stats)],
+        [sg.Text('Interconnect (%):',  background_color = background_color, font=font),
+            sg.Text('',  key='-INTERCONNECT-', background_color = background_color, font=font_stats)],
+        [sg.Text('Corrosion (%):',  background_color = background_color, font=font),
+            sg.Text('',  key='-CORROSION-', background_color = background_color, font=font_stats)],
     ]
 
     listbox_col = sg.Column(output_select_layout,background_color = background_color)
     info_col = sg.Column(single_report_layout, background_color = background_color)
+    module_name = ntpath.basename(output_path)
+    module_grade = file_manager.get_json_stats(output_path,module_name,module=True)
 
     layout = [
         [sg.Text('Results', size=(window_width,1), font = 'Sathu 22', text_color = 'white', background_color = banner_color, justification = 'center')],
@@ -109,14 +126,17 @@ def results_window(output_path,model):
         [sg.Text('Time Submitted:\t' + current_time,font=font,  background_color = background_color)],
         [sg.Text('Selected Model:\t' + model, font = font, background_color = background_color)],
         [sg.Text('_'*window_width,font=font,pad=(8,8), background_color = background_color)],
-        [sg.Text('Select a module below to view results.',font=font,  background_color = background_color )],
+        [sg.Text('Module  ('+ module_name + ')  grade:', background_color = background_color, font=font_stats ),
+            sg.Text('PASS' if module_grade['rating']=='True' else 'FAIL', key='-GRADE-', font=font_stats, background_color = background_color)],
+        [sg.Text('Select a cell below to view results.',font=font,  background_color = background_color )],
         [listbox_col, info_col],
         [sg.Text('_'*window_width, font=font, pad=(8,8), background_color = background_color)],
-        [sg.Text('Preview All Images', font=header_font,  background_color = background_color)],
-        [sg.Text('sort by: ', font=font, background_color = background_color),
-            sg.Checkbox('Pass', font=font, background_color = background_color),
-            sg.Checkbox('Fail', font=font, background_color = background_color)],
-        [sg.Button('Preview')],
+        [sg.Text('Preview', font=header_font,  background_color = background_color)],
+        [sg.Text('Sort by: ', font=font, background_color = background_color),
+            sg.Checkbox('Cracked', font=font, background_color = background_color),
+            sg.Checkbox('Contact Defect', font=font, background_color = background_color),
+            sg.Checkbox('Corrosion', font=font, background_color = background_color)],
+        [sg.Button('Module'), sg.Button('All Cells')],
         [sg.Text('_'*window_width,font=font,pad=(8,8),  background_color = background_color)],
         [sg.Button('Save Results')],
         [sg.Button('Return to Home')]
@@ -128,8 +148,10 @@ def results_window(output_path,model):
         button, values = window.read()
         if button == sg.WIN_CLOSED:
             break
-        if button == 'Preview':
-            preview_window(output_path, files)
+        if button == 'All Cells':
+            preview_window(output_path, files, False)
+        if button == 'Module':
+            preview_window(output_path, file_manager.path_leaf(output_path) +'_col.jpg' , True)
         if button == 'Save Results':
             try:
                 saved = save_results.generate_report()
@@ -142,6 +164,13 @@ def results_window(output_path,model):
             else:
                 sg.Popup('Results not saved. Are you sure?')
                 break
+        if button == '-FILES LIST-':            # list box item select
+                # display stats by updating window!
+                stats = file_manager.get_json_stats(output_path, values['-FILES LIST-'][0], False)
+                window['-CRACKED-'].update(stats['crack'])
+                window['-CONTACT-'].update(stats['contact'])
+                window['-INTERCONNECT-'].update(stats['interconnect'])
+                window['-CORROSION-'].update(stats['corrosion'])
         # add PASS FAIL CHECKBOX FUNCTIONALITY
 
     window.close()
@@ -245,8 +274,7 @@ def home_page():
                 sg.Popup('Select files to begin.', font=font, no_titlebar=True)
             else:
                 # PROCESS! output_path = runProccessing.... (path,files,model)
-                output_path = 'out/' + os.path.basename(values['-FOLDER-']) + '/cells/'
-                print(output_path)
+                output_path = 'out/' + file_manager.path_leaf(values['-FOLDER-'])
                 results_window(output_path,values['-MODEL-'])
         if event == "Preview":
             if values['-ALL-'] == True:

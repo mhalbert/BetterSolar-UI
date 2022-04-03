@@ -3,6 +3,23 @@ import PySimpleGUI as sg
 import io
 import os
 import base64
+import json
+import ntpath
+
+# os.path.split or os.path.basename doesn't work on Linux or Windows.. so,
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
+
+def get_json_stats(output_path, filename, module):
+    if module:
+        path = output_path + '/defect_percentages/' + ntpath.basename(filename)+'.json'
+    else:
+        path = output_path + '/defect_percentages/' + ntpath.splitext(filename)[0]+'.json'
+
+    f = open(path)
+    stats = json.load(f)
+    return stats
 
 def compatibility_check(filename):
     if filename.lower().endswith(('.png')):
@@ -14,6 +31,20 @@ def compatibility_check(filename):
 
 def get_filenames(folder,file_list):
     return [ f for f in file_list if os.path.isfile(os.path.join(folder,f)) and compatibility_check(f) ]
+
+def display_output(path, file, module):
+    if module:
+        module_path = path + '/stitched/'
+        image = Image.open(module_path+file)
+    else:
+        cells_path = path + '/cells/'
+        image = Image.open(cells_path+file)
+
+    image.thumbnail((633, 322))
+    bio = io.BytesIO()
+    image.save(bio, format="PNG")
+    return bio
+
 
 def display(path, file):
     image = Image.open(path+file)
