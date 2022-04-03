@@ -123,28 +123,28 @@ for mod in modules:
         output_defect_percent = torch.div(output_pix.type(torch.float), total_pix)
 
         # defect portions of each category
-        crack_portion = torch.div(torch.count_nonzero(nodef == 1), total_pix)
-        contact_portion = torch.div(torch.count_nonzero(nodef == 2), total_pix)
-        interconnect_portion = torch.div(torch.count_nonzero(nodef == 3), total_pix)
-        corrosion_portion = torch.div(torch.count_nonzero(nodef == 4), total_pix)
+        crack_portion = torch.mul(torch.div(torch.count_nonzero(nodef == 1), total_pix), 100)
+        contact_portion = torch.mul(torch.div(torch.count_nonzero(nodef == 2), total_pix), 100)
+        interconnect_portion = torch.mul(torch.div(torch.count_nonzero(nodef == 3), total_pix), 100)
+        corrosion_portion = torch.mul(torch.div(torch.count_nonzero(nodef == 4), total_pix), 100)
 
         total_defective += torch.tensor([crack_portion, contact_portion, interconnect_portion, corrosion_portion])
 
         # add instance if single cell portion is of given size
-        if crack_portion > .05:
+        if crack_portion > 5:
             crack_instances += 1
             cell_crack = True
-        if contact_portion > .1:
+        if contact_portion > 10:
             contact_instances += 1
             cell_contact = True
-        if corrosion_portion > .1:
+        if corrosion_portion > 10:
             corrosion_portion += 1
             cell_corrosion = True
 
         # creates json to save defect percentage per class category
-        defect_percentages = {'crack': round(float(crack_portion), 7), 'contact': round(float(contact_portion), 7),
-                              'interconnect': round(float(interconnect_portion), 7),
-                              'corrosion': round(float(corrosion_portion), 7), 'has_crack': cell_crack,
+        defect_percentages = {'crack': round(float(crack_portion), 4), 'contact': round(float(contact_portion), 4),
+                              'interconnect': round(float(interconnect_portion), 4),
+                              'corrosion': round(float(corrosion_portion), 4), 'has_crack': cell_crack,
                               'has_contact_defect': cell_contact, 'has_corrosion': cell_corrosion}
 
         with open(module_path + '/defect_percentages/' + name + '.json', 'w') as fp:
@@ -165,7 +165,7 @@ for mod in modules:
         plt.imshow(nodef, cmap=cmap, vmin=0, vmax=4, alpha=.3)
         plt.title('image + prediction')
         plt.tick_params(axis='both', labelsize=0, length=0)
-        plt.xlabel("Defective Portion: " + str(output_defect_percent.numpy().round(5)))
+        plt.xlabel("Defective Portion: " + str(torch.mul(output_defect_percent, 100).numpy().round(4)))
         # plt.savefig(save_path + str(i) + '.png') # comment back in to save figures
         plt.show()
         plt.clf()
@@ -190,14 +190,16 @@ for mod in modules:
 
     stitch_cells.stitch_cells(cell_glob, h, w)
 
+    total_defective = torch.div(total_defective, num_cells)
+
     # TODO: set module pass/fail criteria
-    if total_defective[0] > 0.07:
+    if total_defective[0] > 5:
         PASS = False
-    elif total_defective[1] > 1.00:
+    elif total_defective[1] > 5:
         PASS = False
-    elif total_defective[2] > 0.30:
+    elif total_defective[2] > 2:
         PASS = False
-    elif total_defective[3] > 1.00:
+    elif total_defective[3] > 5:
         PASS = False
 
     total_defective = total_defective.numpy()
@@ -208,9 +210,9 @@ for mod in modules:
     print('Pass: ' + str(PASS))
 
     # creates json to save defect percentage per class category
-    module_defect_stats = {'crack': round(float(total_defective[0]), 7), 'contact': round(float(total_defective[1]), 7),
-                           'interconnect': round(float(total_defective[2]), 7),
-                           'corrosion': round(float(total_defective[3]), 7), 'crack_instances': crack_instances,
+    module_defect_stats = {'crack': round(float(total_defective[0]), 4), 'contact': round(float(total_defective[1]), 4),
+                           'interconnect': round(float(total_defective[2]), 4),
+                           'corrosion': round(float(total_defective[3]), 4), 'crack_instances': crack_instances,
                            'contact_instances': contact_instances, 'corrosion_instances': corrosion_instances,
                            'rating': PASS}
 
