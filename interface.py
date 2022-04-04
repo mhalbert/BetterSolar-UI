@@ -20,6 +20,7 @@ from process_cells import process_cells
 # maybe have the default select file structure as Select All, to minimize clicking from user
 # highlighting all contents of listbox is something that needs to be done via Tkinter
 # TODO: check linux and windows comp.
+#update contact email
 UP =    '▲'
 RIGHT = '►'
 DOWN =  '▼'
@@ -222,10 +223,10 @@ def home_page():
         [sg.Text('Processing Settings',  background_color = section_color, font=header_font)],
         [sg.Text('Select a model from the drop down menu.', background_color=section_color, font=info_font)],
         [sg.Combo(values=models, default_value=models[0], key='-MODEL-', font=font, size=(20,1), pad=((10,50),(10,10))),
-            sg.Text('Report Statistics:', font=font,background_color=section_color),
-            sg.Checkbox('Cell Counts', font=font, background_color = section_color),
-            sg.Checkbox('Highlighted Cells',  font=font,background_color = section_color)],
-        [sg.Text(' '*109,background_color=section_color),
+            sg.Text('Report Statistics:', font=info_font,background_color=section_color),
+            sg.Checkbox('Cell Counts', font=info_font, background_color = section_color),
+            sg.Checkbox('Highlighted Cells',  font=info_font,background_color = section_color)],
+        [sg.Text(' '*104,background_color=section_color),
             sg.Text('Sort by:',font=info_font,background_color=section_color),
             sg.Checkbox('Total Defect Area',font=info_font,background_color=section_color),
             sg.Checkbox('Total Number of Defected Cells',font=info_font,background_color=section_color)],

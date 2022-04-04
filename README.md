@@ -1,14 +1,14 @@
 # BetterSolarUI 0.1.0
-Initial release of the Better Solar User Interface for Round 5 American Made Solar Challenge Software Track Semifinals.
+Initial release of the Better Solar User Interface for American Made Solar Challenge Round 5: Software Track Semifinals.
 
-## What does our application do?
+## What does our Application Do?
 Our goal is to create a user-friendly experience for a historically tedious, time-consuming image processing practice. [Insert ML model info]
 
 ### System Workflow
-1. Upload module files and select custom processing settings on UI. (See: 'Screenshots: Home Page Window')
+1. Upload **module** files and select custom processing settings on UI. (*See: 'Screenshots: Home Page Window'*)
 2. Module files fed into image preprocessing algorithm. Modules splits into individual cells.
 3. Cell files fed into cell level analysis and defect detection using our Machine Learning algorithm.
-4. Analysis and defect detection results collected and outputted, allowed for display and viewing via UI. (See: 'Screenshots: Results Window')
+4. Analysis and defect detection results collected and outputted, allowed for display and viewing via UI. (*See: 'Screenshots: Results Window'*)
 
 ### Screenshots
 
@@ -38,17 +38,25 @@ BetterSolarUI
   - demoinput\
   - demoout\
   - models\
+  - images\
   ...
   [ interface, processing, etc, files]
 ```
 * User Input files placed in: `demoinput`
   * Example input found in `demoinput`. Input should be in module form. 
+* Processed files outputted in `demoout`
+  * Once images are processed and run through our algorithms, they are outputted here.
+* `models` ...
+* `images` ...
+
+
 ## Release History
 * 0.1.0
   * Initial Release for SET! Submission of American Made Solar Challenge Round 5: Software Track
 
 ## License
 
-
+## Contact Us
+Email us at _contact@bettersolargroup.com_. 
 
 
