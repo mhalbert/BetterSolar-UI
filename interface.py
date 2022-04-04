@@ -18,7 +18,6 @@ import preprocessing
 # maybe have the default select file structure as Select All, to minimize clicking from user
 # highlighting all contents of listbox is something that needs to be done via Tkinter
 # TODO: check linux and windows comp.
-# TODO: json true false
 UP =    '▲'
 RIGHT = '►'
 DOWN =  '▼'
@@ -162,7 +161,7 @@ def results_window(module_names,model):
             window['-CELLS LIST-'].update(cells)
             window['-NAME-'].update(values['-FOLDER LIST-'])
             grade = (file_manager.get_json_stats(output_path,values['-FOLDER LIST-'],module=True))['rating']
-            window['-GRADE-'].update('FAIL' if grade == false else 'PASS')
+            window['-GRADE-'].update('FAIL' if grade == False else 'PASS')
         if button == 'Selected Cell':
             preview_window(output_path, values['-CELLS LIST-'][0] , False)
         if button == 'Module':

@@ -18,7 +18,7 @@ def get_json_stats(output_path, filename, module):
         path = output_path + ((ntpath.splitext(filename)[0]).split('_',1))[0] + '/defect_percentages/' + ntpath.splitext(filename)[0] +'.json'
 
     f = open(path)
-    stats = json.load(f)
+    stats = json.loads(f.read())
     return stats
 
 def compatibility_check(filename):
