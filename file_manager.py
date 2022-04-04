@@ -13,9 +13,9 @@ def path_leaf(path):
 
 def get_json_stats(output_path, filename, module):
     if module:
-        path = output_path + '/defect_percentages/' + ntpath.basename(filename)+'.json'
+        path = output_path + (ntpath.splitext(filename))[0] + '/defect_percentages/' + (ntpath.splitext(filename))[0] + '.json'
     else:
-        path = output_path + '/defect_percentages/' + ntpath.splitext(filename)[0]+'.json'
+        path = output_path + ((ntpath.splitext(filename)[0]).split('_',1))[0] + '/defect_percentages/' + ntpath.splitext(filename)[0] +'.json'
 
     f = open(path)
     stats = json.load(f)
@@ -34,11 +34,11 @@ def get_filenames(folder,file_list):
 
 def display_output(path, file, module):
     if module:
-        module_path = path + '/stitched/'
-        image = Image.open(module_path+file)
+        module_path = path + file + '/stitched/' + file + '_col.jpg'
+        image = Image.open(module_path)
     else:
-        cells_path = path + '/cells/'
-        image = Image.open(cells_path+file)
+        cells_path = path + (file.split('_',1))[0] + '/cells/' + file
+        image = Image.open(cells_path)
 
     image.thumbnail((633, 322))
     bio = io.BytesIO()
