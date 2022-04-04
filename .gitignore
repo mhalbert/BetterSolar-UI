@@ -1,6 +1,7 @@
 .idea/
 unused_models/
 Module_Images/
+out/
 __pycache__/
 *.py[cod]
 *$py.class
