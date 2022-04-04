@@ -167,7 +167,7 @@ def process_cells(image_paths, model_name='model_97.pth'):
             plt.tick_params(axis='both', labelsize=0, length=0)
             plt.xlabel("Defective Portion: " + str(torch.mul(output_defect_percent, 100).numpy().round(4)))
             # plt.savefig(save_path + str(i) + '.png') # comment back in to save figures
-            plt.show()
+            # plt.show()
             plt.clf()
 
             plt.imshow(orig_img[0][0], cmap='gray', vmin=0, vmax=1)

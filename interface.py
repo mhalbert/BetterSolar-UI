@@ -164,9 +164,14 @@ def results_window(module_names, model):
         if button == '-FOLDER LIST-':
             cells = sorted(os.listdir(output_path + values['-FOLDER LIST-'] + '/'+ cells_path))
             window['-CELLS LIST-'].update(cells)
-            window['-NAME-'].update(values['-FOLDER LIST-'])
-            grade = (file_manager.get_json_stats(output_path,values['-FOLDER LIST-'],module=True))['rating']
-            window['-GRADE-'].update('FAIL' if grade == False else 'PASS')
+            window['-NAME-'].update('Module ' + values['-FOLDER LIST-'] +': ')
+            stats = (file_manager.get_json_stats(output_path,values['-FOLDER LIST-'],module=True))
+            window['-GRADE-'].update('FAIL' if stats['rating'] == False else 'PASS')
+            window['-CRACKED-'].update(stats['crack'])
+            window['-CONTACT-'].update(stats['contact'])
+            window['-INTERCONNECT-'].update(stats['interconnect'])
+            window['-CORROSION-'].update(stats['corrosion'])
+
         if button == 'Selected Cell':
             preview_window(output_path, values['-CELLS LIST-'][0] , False)
         if button == 'Module':
@@ -230,18 +235,50 @@ def home_page():
     for model in models:
         model_names.append(model.split('/')[1].split('.')[0])
 
-    model_select_layout = [
+    default_percentages = ['8','10','5','15']
+    default_cells = ['2','5','2','8']
+    grading_criteria_table = [
+        [sg.Text('Crack', pad=((5,20),(1,5)), font=info_font, background_color = section_color),
+            sg.Text('Contact', pad=((33,20),(1,5)), font=info_font, background_color = section_color),
+            sg.Text('Interconnect', pad=((15,20),(1,5)), font=info_font, background_color = section_color),
+            sg.Text('Corrosion', pad=((10,20),(1,1)), font=info_font, background_color = section_color),
+       ],      # add a >100% check
+        [sg.Input(default_text=default_percentages[0], justification='c', size=(5,None), pad=((1,11),(1,5)), key='-CRACK %-', font=info_font, background_color = section_color),
+            sg.Text('%', font=info_font, background_color = section_color),
+            sg.Input(default_text=default_percentages[1], justification='c',  size=(5,None),pad=((12,12),(1,5)), key='-CONTACT %-',  font=info_font,background_color = section_color),
+            sg.Text('%', font=info_font, background_color = section_color),
+            sg.Input(default_text=default_percentages[2], justification='c',  size=(5,None), pad=((11,12),(1,5)), key='-INTERCONNECT %-',  font=info_font,background_color = section_color),
+            sg.Text('%', font=info_font, background_color = section_color),
+            sg.Input(default_text=default_percentages[3], justification='c',  size=(5,None),pad=((11,12),(1,1)), key='-CORROSION %-',  font=info_font,background_color = section_color),
+            sg.Text('%', font=info_font, background_color = section_color)],
+        [sg.Input(default_text=default_cells[0], justification='c', size=(5,None),pad=((1,5),(1,5)), key='-CRACK #-', font=info_font, background_color = section_color),
+            sg.Text('cells', font=info_font, background_color = section_color),
+            sg.Input(default_text=default_cells[1], justification='c', size=(5,None),pad=((5,5),(1,5)), key='-CONTACT #-',  font=info_font,background_color = section_color),
+            sg.Text('cells', font=info_font, background_color = section_color),
+            sg.Input(default_text=default_cells[2], justification='c', size=(5,None),pad=((5,5),(1,5)), key='-INTERCONNECT #-',  font=info_font,background_color = section_color),
+            sg.Text('cells', font=info_font, background_color = section_color),
+            sg.Input(default_text=default_cells[3], justification='c', size=(5,None),pad=((5,5),(1,1)), key='-CORROSION #-',  font=info_font,background_color = section_color),
+            sg.Text('cells', font=info_font, background_color = section_color),
+        ],
+    ]
+
+    #grading_criteria_table = sg.Table(grading_criteria_data, headings=['Crack', 'Contact', 'Interconnect', 'Corrosion'], max_col_width=10, num_rows=3, row_height=10)
+    grading_criteria_layout = [
+        [sg.Text('Pass/Fail Module Grading Criteria:', pad=((1,1),(20,1)), font=info_font,background_color=section_color)],
+        [sg.Frame('',grading_criteria_table, background_color=section_color, relief='flat')],
+    ]
+    model_layout = [
         [sg.Text('Processing Settings',  background_color = section_color, font=header_font)],
         [sg.Text('Select a model from the drop down menu.', background_color=section_color, font=info_font)],
-        [sg.Combo(values=model_names, default_value=model_names[0], key='-MODEL-', font=font, size=(20,1), pad=((10,50),(10,10))),
-            sg.Text('Report Statistics:', font=info_font,background_color=section_color),
-            sg.Checkbox('Cell Counts', font=info_font, background_color = section_color),
-            sg.Checkbox('Highlighted Cells',  font=info_font,background_color = section_color)],
-        [sg.Text(' '*104,background_color=section_color),
-            sg.Text('Sort by:',font=info_font,background_color=section_color),
-            sg.Checkbox('Total Defect Area',font=info_font,background_color=section_color),
-            sg.Checkbox('Total Number of Defected Cells',font=info_font,background_color=section_color)],
+        [sg.Combo(values=model_names, default_value=model_names[0], key='-MODEL-', font=font, size=(20,1), pad=((10,50),(10,10)))],
     ]
+
+    model_col = sg.Column(model_layout, background_color=section_color)
+    grading_col = sg.Column(grading_criteria_layout, background_color=section_color)
+    processing_settings_layout = [
+        [model_col, grading_col]
+    ]
+
 
     frame = [[sg.Text('')]]
     SYMBOL_UP =  '▲'
@@ -264,7 +301,7 @@ def home_page():
     ]
 
     file_select_col = sg.Column(file_select_layout, background_color=section_color, size=(window_width/3,window_height*0.56), element_justification='l')
-    model_select_col = sg.Column(model_select_layout,  background_color=section_color, size=(window_width,window_height/6), element_justification='l')
+    model_select_col = sg.Column(processing_settings_layout,  background_color=section_color, size=(window_width,window_height/6), element_justification='l')
     input_display_col = sg.Column(input_display_layout, background_color = section_color, size = (window_width*2/3,window_height*0.56), element_justification='l')
 
     layout = [
