@@ -9,7 +9,7 @@ import ntpath
 import file_manager
 import contactinfo_window
 import save_results
-import preprocessing
+from preprocessing import preprocessing
 #import process_cells
 # to do:
 # provide in documentation of PNGs or GIFS limitation with PYSIMPLEGUI
@@ -213,7 +213,7 @@ def home_page():
         [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-'), sg.FolderBrowse(font=button_font, pad=(10,10), )],
         [sg.Text('File(s):', font = font, pad=((10,1),(1,1)), background_color = section_color)], #sg.Text('Manually select from below or check "Select All."', font=info_font, background_color = section_color)],
         [sg.Listbox(values = [], enable_events = True, font = listbox_font, select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
-        [sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
+        #[sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
     ]
 
     model_select_layout = [
@@ -281,20 +281,21 @@ def home_page():
             files = file_manager.get_filenames(folder,file_list)
             window['-FILES LIST-'].update(files)
         if event == 'Run':
-            if values['-ALL-'] == True:
-                folder = values['-FOLDER-']
-                files = file_manager.get_filenames(folder,file_list)
-            else:
-                files = values['-FILES LIST-']
+            #if values['-ALL-'] == True:
+            folder = values['-FOLDER-']
+            files = file_manager.get_filenames(folder,file_list)
+            #else:
+            #    files = values['-FILES LIST-']
             if not files:
                 sg.Popup('Select files to begin.', font=font, no_titlebar=True)
             else:
                 # preprocess modules in folder and store in /images/module_xx
-                #preprocessing(folder)
+                print(ntpath.basename(folder))
+                preprocessing(ntpath.basename(folder))
                 # pass those to the processing algorithm
                 #process_cells()
                 # open results window with output paths.
-                results_window(files, values['-MODEL-'])
+                #results_window(files, values['-MODEL-'])
 
         if event == "Preview":
             if values['-PREVIEW ALL-'] == True:
