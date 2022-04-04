@@ -1,5 +1,5 @@
 .idea/
-models/
+unused_models/
 Module_Images/
 __pycache__/
 *.py[cod]
