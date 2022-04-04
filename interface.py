@@ -20,6 +20,7 @@ from process_cells import process_cells
 # maybe have the default select file structure as Select All, to minimize clicking from user
 # highlighting all contents of listbox is something that needs to be done via Tkinter
 # TODO: check linux and windows comp.
+# add model selection option and feed into process_cells
 #update contact email
 UP =    '▲'
 RIGHT = '►'
@@ -196,7 +197,6 @@ def results_window(module_names, model):
 
 
 def home_page():
-    models = ['5-class defect segmentation']
     # design variables
     font = 'Sathu 13'
     button_font='Menlo 12'
@@ -209,20 +209,26 @@ def home_page():
     window_width=1200
     window_height=750
 
-
+    default_folder = 'demoinput'
+    default_files = glob2.glob(default_folder+'/*')
     file_select_layout = [
         [sg.Text('Upload Files',  background_color = section_color, font=header_font)],
         [sg.Text('Upload a folder of module images here to process.',  background_color = section_color, font=font)],
-        [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-', default_text='demoinput'), sg.FolderBrowse(font=button_font, pad=(10,10), )],
+        [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-', default_text=default_folder), sg.FolderBrowse(font=button_font, pad=(10,10), )],
         [sg.Text('File(s):', font = font, pad=((10,1),(1,1)), background_color = section_color)], #sg.Text('Manually select from below or check "Select All."', font=info_font, background_color = section_color)],
-        [sg.Listbox(values = [], enable_events = True, font = listbox_font, select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
+        [sg.Listbox(default_files, enable_events = True, font = listbox_font, select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
         [sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
     ]
+
+    models = glob2.glob('models/*.pth')
+    model_names = []
+    for model in models:
+        model_names.append(model.split('/')[1].split('.')[0])
 
     model_select_layout = [
         [sg.Text('Processing Settings',  background_color = section_color, font=header_font)],
         [sg.Text('Select a model from the drop down menu.', background_color=section_color, font=info_font)],
-        [sg.Combo(values=models, default_value=models[0], key='-MODEL-', font=font, size=(20,1), pad=((10,50),(10,10))),
+        [sg.Combo(values=model_names, default_value=model_names[0], key='-MODEL-', font=font, size=(20,1), pad=((10,50),(10,10))),
             sg.Text('Report Statistics:', font=info_font,background_color=section_color),
             sg.Checkbox('Cell Counts', font=info_font, background_color = section_color),
             sg.Checkbox('Highlighted Cells',  font=info_font,background_color = section_color)],
