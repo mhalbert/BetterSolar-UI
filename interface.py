@@ -6,11 +6,13 @@ import base64
 import time
 import ntpath
 # files
+import glob2
 import file_manager
 import contactinfo_window
 import save_results
 from preprocessing import preprocessing
-#import process_cells
+from process_cells import process_cells
+
 # to do:
 # provide in documentation of PNGs or GIFS limitation with PYSIMPLEGUI
 # write helper function for image flip through, reusing code in two functions below
@@ -84,7 +86,8 @@ def preview_window(output_path,files, module):
     window.close()
     return
 
-def results_window(module_names,model):
+
+def results_window(module_names, model):
     # design variables
     font = 'Sathu 11'
     header_font = 'Sathu 15 underline'
@@ -98,11 +101,11 @@ def results_window(module_names,model):
     t = time.localtime()
     current_time=time.strftime("%H:%M:%S", t)
     output_path = 'demoout/'
-    cells_path= 'cells/'
+    cells_path = 'cells/'
     defect_path = 'defect_percentages/'
     stitched_path = 'stitched/'
 
-    folder_list = os.listdir(output_path)
+    folder_list = module_names
     #file_list = os.listdir(cells_path)
     #files = file_manager.get_filenames(cells,file_list)
     cells = []
@@ -157,7 +160,7 @@ def results_window(module_names,model):
         if button == sg.WIN_CLOSED:
             break
         if button == '-FOLDER LIST-':
-            cells = os.listdir(output_path + values['-FOLDER LIST-'] + '/'+ cells_path)
+            cells = sorted(os.listdir(output_path + values['-FOLDER LIST-'] + '/'+ cells_path))
             window['-CELLS LIST-'].update(cells)
             window['-NAME-'].update(values['-FOLDER LIST-'])
             grade = (file_manager.get_json_stats(output_path,values['-FOLDER LIST-'],module=True))['rating']
@@ -191,9 +194,8 @@ def results_window(module_names,model):
     return
 
 
-
 def home_page():
-    models=['5-class defect segmentation']
+    models = ['5-class defect segmentation']
     # design variables
     font = 'Sathu 13'
     button_font='Menlo 12'
@@ -210,10 +212,10 @@ def home_page():
     file_select_layout = [
         [sg.Text('Upload Files',  background_color = section_color, font=header_font)],
         [sg.Text('Upload a folder of module images here to process.',  background_color = section_color, font=font)],
-        [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-'), sg.FolderBrowse(font=button_font, pad=(10,10), )],
+        [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-', default_text='demoinput'), sg.FolderBrowse(font=button_font, pad=(10,10), )],
         [sg.Text('File(s):', font = font, pad=((10,1),(1,1)), background_color = section_color)], #sg.Text('Manually select from below or check "Select All."', font=info_font, background_color = section_color)],
         [sg.Listbox(values = [], enable_events = True, font = listbox_font, select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
-        #[sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
+        [sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
     ]
 
     model_select_layout = [
@@ -281,21 +283,27 @@ def home_page():
             files = file_manager.get_filenames(folder,file_list)
             window['-FILES LIST-'].update(files)
         if event == 'Run':
-            #if values['-ALL-'] == True:
             folder = values['-FOLDER-']
-            files = file_manager.get_filenames(folder,file_list)
-            #else:
-            #    files = values['-FILES LIST-']
+            if values['-ALL-'] == True:
+                # files = file_manager.get_filenames(folder,file_list)
+                files = sorted(glob2.glob(folder + '/*'))
+            else:
+                all_files = sorted(glob2.glob(folder + '/*'))
+                files = []
+                for value in values['-FILES LIST-']:
+                    files.append([file for file in all_files if value in file][0])
+                # files = values['-FILES LIST-']
             if not files:
                 sg.Popup('Select files to begin.', font=font, no_titlebar=True)
             else:
                 # preprocess modules in folder and store in /images/module_xx
-                print(ntpath.basename(folder))
-                preprocessing(ntpath.basename(folder))
+                # print(ntpath.basename(folder))
+                # print(files)
+                image_paths = preprocessing(files)
                 # pass those to the processing algorithm
-                #process_cells()
+                output_mods = process_cells(image_paths)
                 # open results window with output paths.
-                #results_window(files, values['-MODEL-'])
+                results_window(output_mods, values['-MODEL-'])
 
         if event == "Preview":
             if values['-PREVIEW ALL-'] == True:
@@ -341,6 +349,7 @@ def home_page():
 
     window.close()
     return
+
 
 def main():
     #print(sg.Text.fonts_installed_list())
