@@ -16,7 +16,7 @@ import stitch_cells
 ##################################################
 image_path = 'images/'                # folder where images are
 model_path = 'models/'                # folder where model is stored
-model_name = 'model_97.pth'           # trained model name
+# model_name = 'model_97.pth'           # trained model name
 save_path = 'demoout/'                # location to save figures
 defect_dir = 'defect_percentages/'    # location to save defect percentage jsons
 ##################################################
@@ -44,11 +44,6 @@ else:
     model.aux_classifier[4] = torch.nn.Conv2d(num_ftrs_aux, num_classes, kernel_size=1)
     model.classifier[4] = torch.nn.Conv2d(num_ftrs, num_classes, kernel_size=1)
 
-# model = model.cuda()
-checkpoint = torch.load(model_path+model_name, map_location='cpu')
-model.load_state_dict(checkpoint['model'])
-model.eval()
-
 # transforms to put images through the model
 trans = t.Compose([t.ToTensor(), t.Normalize(mean=.5, std=.2)])
 
@@ -63,7 +58,10 @@ cmaplist = [(0.001462, 0.000466, 0.013866, 1.0),
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list('Custom', cmaplist, len(cmaplist))
 
 
-def process_cells(image_paths):
+def process_cells(image_paths, model_name='model_97.pth'):
+    checkpoint = torch.load(model_path + model_name, map_location='cpu')
+    model.load_state_dict(checkpoint['model'])
+    model.eval()
     cnt = 0
     os.makedirs(save_path, exist_ok=True)
     all_modules = []
