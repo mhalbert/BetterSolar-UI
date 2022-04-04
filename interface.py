@@ -308,7 +308,7 @@ def home_page():
                 # print(files)
                 image_paths = preprocessing(files)
                 # pass those to the processing algorithm
-                output_mods = process_cells(image_paths, model_name=model_name)
+                output_mods = process_cells(image_paths, model_name=values['-MODEL-'] + '.pth')
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
 
