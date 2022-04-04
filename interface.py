@@ -210,13 +210,18 @@ def home_page():
     window_height=750
 
     default_folder = 'demoinput'
-    default_files = glob2.glob(default_folder+'/*')
+    default_files = (glob2.glob(default_folder+'/*'))
+    file_list=[]
+    for files in default_files:
+        file_list.append(files.split('/')[1])
+
+    print(default_files)
     file_select_layout = [
         [sg.Text('Upload Files',  background_color = section_color, font=header_font)],
         [sg.Text('Upload a folder of module images here to process.',  background_color = section_color, font=font)],
         [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-', default_text=default_folder), sg.FolderBrowse(font=button_font, pad=(10,10), )],
         [sg.Text('File(s):', font = font, pad=((10,1),(1,1)), background_color = section_color)], #sg.Text('Manually select from below or check "Select All."', font=info_font, background_color = section_color)],
-        [sg.Listbox(default_files, enable_events = True, font = listbox_font, select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
+        [sg.Listbox(file_list, enable_events = True, font = listbox_font, select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
         [sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
     ]
 
@@ -253,7 +258,7 @@ def home_page():
     input_display_layout = [
         [sg.Text("Preview Files:", pad = (10,None), font=header_font, background_color = section_color)],
         [sg.Text('Click "preview" to begin. Use the arrow keys to flip through your selected files.', pad = (10, None), font=info_font, background_color = section_color)],
-        [sg.Frame('', image_layout, size = (633,322), pad=(10,10), background_color = '#D8D8D8', element_justification='c'),
+        [sg.Frame('', image_layout, size = (633,322), pad=(10,10), background_color = '#D8D8D8', element_justification='c', relief='flat'),
                 sg.Column(input_button_layout, background_color=section_color)],
         [sg.Text('', key = 'FILENAME', font='Sathu 11 underline', text_color='#1a385c', background_color=section_color)],
     ]
@@ -283,12 +288,11 @@ def home_page():
             break
         if event == '-FOLDER-':
             folder = values['-FOLDER-']
-            try:
-                file_list = os.listdir(folder)
-            except:
-                file_list = []
-            files = file_manager.get_filenames(folder,file_list)
-            window['-FILES LIST-'].update(files)
+            files = sorted(glob2.glob(folder + '/*'))
+            file_list=[]
+            for file in files:
+                file_list.append(ntpath.basename(file))
+            window['-FILES LIST-'].update(file_list)
         if event == 'Run':
             folder = values['-FOLDER-']
             if values['-ALL-'] == True:
@@ -308,50 +312,44 @@ def home_page():
                 # print(files)
                 image_paths = preprocessing(files)
                 # pass those to the processing algorithm
-                output_mods = process_cells(image_paths, model_name=model_name)
+                output_mods = process_cells(image_paths, model_name=values['-MODEL-']+'.pth')
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
 
         if event == "Preview":
             if values['-PREVIEW ALL-'] == True:
                 folder = values['-FOLDER-']
-                files = file_manager.get_filenames(folder,file_list)
+                files = sorted(glob2.glob(folder + '/*'))
+                file_list=[]
+                for file in files:
+                    file_list.append(ntpath.basename(file))
+
             else:
-                files = values['-FILES LIST-']
+                file_list = values['-FILES LIST-']
             path = values['-FOLDER-'] + '/'
-            if not files:
+            if not file_list:
                 sg.Popup('Select a file to preview.',font=font, no_titlebar=True)
             else:
-                bio = file_manager.display(path,files[0])
+                bio = file_manager.display(path,file_list[0])
                 window["-IMAGE-"].update(data=bio.getvalue())
-                window['FILENAME'].update(files[0])
+                window['FILENAME'].update(file_list[0])
         if event == SYMBOL_DOWN and (len(values['-FILES LIST-'])>1 or values['-PREVIEW ALL-'] == True):
             image_counter += 1
-            if values['-PREVIEW ALL-'] == True:
-                folder = values['-FOLDER-']
-                files = file_manager.get_filenames(folder,file_list)
-            else:
-                files = values['-FILES LIST-']
             path = values['-FOLDER-'] + '/'
-            num_files=len(files)
+            num_files=len(file_list)
             if image_counter >= num_files:
                 image_counter -= num_files
-            window['FILENAME'].update(files[image_counter])
-            bio = file_manager.display(path,files[image_counter])
+            window['FILENAME'].update(file_list[image_counter])
+            bio = file_manager.display(path,file_list[image_counter])
             window['-IMAGE-'].update(data=bio.getvalue())
         if event == SYMBOL_UP and (len(values['-FILES LIST-'])>1 or values['-PREVIEW ALL-'] == True):
             image_counter -= 1
-            if values['-PREVIEW ALL-'] == True:
-                folder = values['-FOLDER-']
-                files = file_manager.get_filenames(folder,file_list)
-            else:
-                files = values['-FILES LIST-']
             path = values['-FOLDER-'] + '/'
-            num_files=len(files)
+            num_files=len(file_list)
             if image_counter < 0:
                 image_counter = num_files + image_counter
-            window['FILENAME'].update(files[image_counter])
-            bio = file_manager.display(path,files[image_counter])
+            window['FILENAME'].update(file_list[image_counter])
+            bio = file_manager.display(path,file_list[image_counter])
             window['-IMAGE-'].update(data=bio.getvalue())
 
     window.close()
