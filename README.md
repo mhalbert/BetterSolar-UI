@@ -11,17 +11,15 @@ Initial release of the Better Solar User Interface for American Made Solar Chall
 In the solar industry there is a consistent influx of valuable Electroluminescence (EL) images, which become 
 overwhelming and unmanagable. Inspecting these images easily becomes a tedious and monotonous process.
 
-Our solution focuses on utilizing Machine Learning techniques to process these Electroluminescene (EL)
-images and provide granular output with defect detection and localization of several defect categories. 
-This output allows for further analysis on defect impact of overal module power, valuable to the customer.
-
-The Better Solar approach relies on a supervised ML approach that has been proven to effectively detect, 
-localize, and classify numerous defects that can originate in manufacturing, during accelerated aging tests, 
+The Better Solar approach relies on a supervised Machine Learning (ML) approach that has been proven to effectively 
+detect, localize, and classify numerous defects that can originate in manufacturing, during accelerated aging tests, 
 or following field exposure. 
 
-At this point, the software can effectively locate the various defects shown below. (*See: 'Screenshots: Defect Types'*) 
-Eventually, our solution will also provide feedback on the magnitude of the problem (e.g., its impact on energy yield) 
-and provide suggested corrective actions both in a manufacturing or a field-based setting.
+At this point, the software can effectively provide granular output with defect detection and localization of 
+the various defects shown below. (*See: 'Screenshots: Defect Types'*) This output allows for further analysis on 
+defect impact on module outputs, valuable to the customer. Eventually, our solution will provide this feedback on 
+the magnitude of the problem (e.g., its impact on energy yield) and provide suggested corrective actions both in 
+a manufacturing or a field-based setting.
 
 
 ### Basic System Workflow
@@ -68,6 +66,8 @@ BetterSolarUI
   * `demoout` folder contains folder(s) of processed module(s). ![](readmepics/demoout.png)
 * Defect Detection models placed in`models` 
   * These models are avaliable for selection via the UI.
+  * The current available models both find cracks, contact interruptions, and resistive interconnect defects. 
+  * One of the models also finds contact corrosion, and the other highlights interconnect brightspots.
 
 
 
