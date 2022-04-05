@@ -20,16 +20,17 @@ def get_scaling():
     root.destroy()
     return scaling
 
-# Find the number in original screen when GUI designed.
-my_scaling = 1.0                    # call get_scaling()
-my_width, my_height = 1440, 900     # call sg.Window.get_screen_size()
-# Get the number for new screen
-scaling_old = get_scaling()
-width, height = sg.Window.get_screen_size()
+def scale():
+    # Find the number in original screen when GUI designed.
+    my_scaling = 1.0                    # call get_scaling()
+    my_width, my_height = 1440, 900     # call sg.Window.get_screen_size()
+    # Get the number for new screen
+    scaling_old = get_scaling()
+    #print(scaling_old)
+    width, height = sg.Window.get_screen_size()
 
-scaling = scaling_old * min(width / my_width, height / my_height)
-
-sg.set_options(scaling=scaling)
+    scaling = scaling_old * min(width / my_width, height / my_height)
+    sg.set_options(scaling = scaling)
 
 
 
@@ -110,6 +111,7 @@ def results_window(module_names, model):
     font_highlight = '#f0efbb'
     window_width=500
     window_height=600
+    scale()
 
     t = time.localtime()
     current_time=time.strftime("%H:%M:%S", t)
@@ -220,6 +222,7 @@ def home_page():
     border_width = 5
     window_width=1200
     window_height=750
+    scale()
 
     default_folder = 'demoinput'
     default_files = sorted(glob2.glob(os.path.join(default_folder, '*')))
@@ -320,7 +323,7 @@ def home_page():
         [sg.Text('', size=(window_width,1), font = 'Sathu 22', text_color = 'white', background_color = banner_color, justification = 'center', pad=((1,1),(10,1)))],
     ]
 
-    window = sg.Window('Home', layout, size=(window_width,window_height), no_titlebar=True, grab_anywhere=True)
+    window = sg.Window('Home', layout, size=(window_width,window_height), grab_anywhere=True)
     image_counter = 0
     prev = False
     while True:
@@ -359,11 +362,11 @@ def home_page():
                                     values['-CONTACT %-'], values['-CONTACT #-'],
                                     values['-INTERCONNECT %-'], values['-INTERCONNECT #-'],
                                     values['-CORROSION %-'], values['-CORROSION #-']]
-                sg.popup_animated('popup.PNG','processing - please wait', text_color='white', font=font, background_color='#29298c')
+               # sg.popup_animated('popup.PNG','processing - please wait', text_color='white', font=font, background_color='#29298c')
                 # pass those to the processing algorithm
                 output_mods = process_cells(image_paths, [int(x) for x in grading_criteria],
                                             model_name=values['-MODEL-']+'.pth')
-                sg.popup_animated(None)
+               # sg.popup_animated(None)
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
                 prev=True
@@ -412,17 +415,6 @@ def home_page():
 
 
 def main():
-    # Find the number in original screen when GUI designed.
-    my_scaling = 1.0                    # call get_scaling()
-    my_width, my_height = 1440, 900     # call sg.Window.get_screen_size()
-    # Get the number for new screen
-    scaling_old = get_scaling()
-    width, height = sg.Window.get_screen_size()
-
-    scaling = scaling_old * min(width / my_width, height / my_height)
-
-    sg.set_options(scaling=scaling)
-
     my_new_theme = {'BACKGROUND': '#e4e4f0',
                     'TEXT': '#000000',
                     'INPUT': '#D8D8D8',
@@ -436,11 +428,10 @@ def main():
 
     sg.theme_add_new('MainTheme', my_new_theme)
     sg.theme('MainTheme')
-
     font='Sathu 12'
     button_font='Menlo 12'
     banner_color = '#4d4d73'
-
+    scale()
     layout = [
         [sg.Text('Main Menu', font = 'Sathu 18', size=(700,1),pad=((0,0),(1,30)), text_color = 'white', background_color = banner_color, justification = 'center')],
         #[sg.Frame('',image_layout, size=(600,315), pad=(10,10))],
