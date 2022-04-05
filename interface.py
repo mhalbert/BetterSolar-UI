@@ -138,7 +138,7 @@ def results_window(module_names, model):
         [sg.Text('Selected Model:\t' + model, font = font, background_color = background_color)],
         [sg.Text('_'*window_width,font=font,pad=(None,5), background_color = background_color)],
         [sg.Text(module_name, background_color = background_color, font=font_stats, key='-NAME-' ),
-            sg.Text('Grade', key='-GRADE-', font=font_stats, background_color = background_color)],
+            sg.Text('', key='-GRADE-', font=font_stats, background_color = background_color)],
         [sg.Text('Select a module below to view results.',font=font,  background_color = background_color )],
         [listbox_col, info_col],
         [sg.Text('_'*window_width, font=font, pad=(None,5), background_color = background_color)],
