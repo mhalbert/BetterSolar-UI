@@ -13,15 +13,25 @@ import save_results
 from preprocessing import preprocessing
 from process_cells import process_cells
 
-# to do:
-# provide in documentation of PNGs or GIFS limitation with PYSIMPLEGUI
-# write helper function for image flip through, reusing code in two functions below
-# add PASS FAIL CHECKBOX FUNCTIONALITY
-# maybe have the default select file structure as Select All, to minimize clicking from user
-# highlighting all contents of listbox is something that needs to be done via Tkinter
-# TODO: check linux and windows comp.
-# add model selection option and feed into process_cells
-#update contact email
+def get_scaling():
+    # called before window created
+    root = sg.tk.Tk()
+    scaling = root.winfo_fpixels('1i')/72
+    root.destroy()
+    return scaling
+
+# Find the number in original screen when GUI designed.
+my_scaling = 1.0                    # call get_scaling()
+my_width, my_height = 1440, 900     # call sg.Window.get_screen_size()
+# Get the number for new screen
+scaling_old = get_scaling()
+width, height = sg.Window.get_screen_size()
+
+scaling = scaling_old * min(width / my_width, height / my_height)
+
+sg.set_options(scaling=scaling)
+
+
 
 UP =    '▲'
 RIGHT = '►'
@@ -310,7 +320,7 @@ def home_page():
         [sg.Text('', size=(window_width,1), font = 'Sathu 22', text_color = 'white', background_color = banner_color, justification = 'center', pad=((1,1),(10,1)))],
     ]
 
-    window = sg.Window('Home', layout, size=(window_width,window_height))
+    window = sg.Window('Home', layout, size=(window_width,window_height), no_titlebar=True, grab_anywhere=True)
     image_counter = 0
     prev = False
     while True:
@@ -400,12 +410,6 @@ def home_page():
     window.close()
     return
 
-def get_scaling():
-    # called before window created
-    root = sg.tk.Tk()
-    scaling = root.winfo_fpixels('1i')/72
-    root.destroy()
-    return scaling
 
 def main():
     # Find the number in original screen when GUI designed.
