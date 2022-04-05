@@ -15,7 +15,13 @@ Our solution focuses on utilizing Machine Learning techniques to process these E
 images and provide granular output with defect detection and localization of several defect categories. 
 This output allows for further analysis on defect impact of overal module power, valuable to the customer.
 
-(talk about defect categories somewhere??)
+The Better Solar approach relies on a supervised ML approach that has been proven to effectively detect, 
+localize, and classify numerous defects that can originate in manufacturing, during accelerated aging tests, 
+or following field exposure. 
+
+At this point, the software can effectively locate the various defects shown below. (*See: 'Screenshots: Defect Types'*) 
+Eventually, our solution will also provide feedback on the magnitude of the problem (e.g., its impact on energy yield) 
+and provide suggested corrective actions both in a manufacturing or a field-based setting.
 
 
 ### Basic System Workflow
@@ -26,6 +32,7 @@ This output allows for further analysis on defect impact of overal module power,
 
 ### Screenshots
 
+#### Defect Types:![](readmepics/defecttypes.png)
 #### Home Page Window:![](readmepics/homepage.png)
 #### Results Window:![](readmepics/demo_results.png)
 #### Image Review Window:![](readmepics/demo_image.png)
