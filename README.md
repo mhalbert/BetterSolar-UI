@@ -26,14 +26,9 @@ This output allows for further analysis on defect impact of overal module power,
 
 ### Screenshots
 
-#### Home Page Window:
-![](readmepics/homepage.png)
-
-#### Results Window:
-![](readmepics/demo_results.png)
-
-#### Image Review Window:
-![](readmepics/demo_image.png)
+#### Home Page Window:![](readmepics/homepage.png)
+#### Results Window:![](readmepics/demo_results.png)
+#### Image Review Window:![](readmepics/demo_image.png)
 
 
 ## Installation
@@ -42,6 +37,7 @@ Download ZIP folder above or use `gh repo clone mhalbert/BetterSolarUI`    (TODO
 
 Using the above`requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
 `pip install -r requirements.txt`
+
 
 ## User Guide
 (For initial 0.1.0 Release of BetterSolarUI)

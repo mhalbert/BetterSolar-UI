@@ -262,19 +262,19 @@ def home_page():
         ],
     ]
 
-    #grading_criteria_table = sg.Table(grading_criteria_data, headings=['Crack', 'Contact', 'Interconnect', 'Corrosion'], max_col_width=10, num_rows=3, row_height=10)
     grading_criteria_layout = [
-        [sg.Text('Pass/Fail Module Grading Criteria:', pad=((1,1),(20,1)), font=info_font,background_color=section_color)],
+        [sg.Text('Module Grading Criteria:', pad=((1,1),(5,1)), font=font,background_color=section_color), sg.Text('minimum values resulting in a module grade of "FAIL"', pad=((1,1),(5,1)), font=info_font,background_color=section_color)],
         [sg.Frame('',grading_criteria_table, background_color=section_color, relief='flat')],
     ]
+    defect_categories = 'Defect categories: Crack, Contact, Interconnect, Corrosion'
     model_layout = [
         [sg.Text('Processing Settings',  background_color = section_color, font=header_font)],
         [sg.Text('Select a model from the drop down menu.', background_color=section_color, font=info_font)],
-        [sg.Combo(values=model_names, default_value=model_names[0], key='-MODEL-', font=font, size=(20,1), pad=((10,50),(10,10)))],
+        [sg.Combo(values=model_names, default_value=model_names[0], key='-MODEL-', tooltip=defect_categories, font=font, size=(20,1), pad=((10,50),(10,10)))],
     ]
 
-    model_col = sg.Column(model_layout, background_color=section_color)
-    grading_col = sg.Column(grading_criteria_layout, background_color=section_color)
+    model_col = sg.Column(model_layout, background_color=section_color, size=(window_width/3,window_height/6))
+    grading_col = sg.Column(grading_criteria_layout, background_color=section_color, size=(window_width*(2/3),window_height/6))
     processing_settings_layout = [
         [model_col, grading_col]
     ]
@@ -288,13 +288,13 @@ def home_page():
         [sg.Button(SYMBOL_UP,pad=(5,5), auto_size_button=True, tooltip='Previous'),
             sg.Button(SYMBOL_DOWN,pad=(5,5),auto_size_button=True, tooltip='Next')],
         [sg.Button('Preview',font=button_font, pad=(5,5))],
-        [sg.Checkbox('Preview All', enable_events = True, key = '-PREVIEW ALL-', default = False, background_color = section_color, font = 'Sathu 11', pad = (5,5))],
+        #[sg.Checkbox('Preview All', enable_events = True, key = '-PREVIEW ALL-', default = False, background_color = section_color, font = 'Sathu 11', pad = (5,5))],
 
     ]
     image_layout = [[sg.Image(key='-IMAGE-')]]
     input_display_layout = [
         [sg.Text("Preview Files:", pad = (10,None), font=header_font, background_color = section_color)],
-        [sg.Text('Click "preview" to begin. Use the arrow keys to flip through your selected files.', pad = (10, None), font=info_font, background_color = section_color)],
+        [sg.Text('Click "preview" to begin. Use the arrow keys to flip through your selected files. Check "Select All" to preview all images.', pad = (10, None), font=info_font, background_color = section_color)],
         [sg.Frame('', image_layout, size = (633,322), pad=(10,10), background_color = '#D8D8D8', element_justification='c', relief='flat'),
                 sg.Column(input_button_layout, background_color=section_color)],
         [sg.Text('', key = 'FILENAME', font='Sathu 11 underline', text_color='#1a385c', background_color=section_color)],
@@ -362,7 +362,7 @@ def home_page():
                 results_window(output_mods, values['-MODEL-'])
 
         if event == "Preview":
-            if values['-PREVIEW ALL-'] == True:
+            if values['-ALL-'] == True:
                 folder = values['-FOLDER-']
                 files = sorted(glob2.glob(folder + '/*'))
                 file_list=[]
@@ -378,7 +378,7 @@ def home_page():
                 bio = file_manager.display(path,file_list[0])
                 window["-IMAGE-"].update(data=bio.getvalue())
                 window['FILENAME'].update(file_list[0])
-        if event == SYMBOL_DOWN and (len(values['-FILES LIST-'])>1 or values['-PREVIEW ALL-'] == True):
+        if event == SYMBOL_DOWN and (len(values['-FILES LIST-'])>1 or values['-ALL-'] == True):
             image_counter += 1
             path = values['-FOLDER-'] + '/'
             num_files=len(file_list)
@@ -387,7 +387,7 @@ def home_page():
             window['FILENAME'].update(file_list[image_counter])
             bio = file_manager.display(path,file_list[image_counter])
             window['-IMAGE-'].update(data=bio.getvalue())
-        if event == SYMBOL_UP and (len(values['-FILES LIST-'])>1 or values['-PREVIEW ALL-'] == True):
+        if event == SYMBOL_UP and (len(values['-FILES LIST-'])>1 or values['-ALL-'] == True):
             image_counter -= 1
             path = values['-FOLDER-'] + '/'
             num_files=len(file_list)
