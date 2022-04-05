@@ -48,6 +48,7 @@ BetterSolarUI
   - demoinput\
   - demoout\
   - models\
+  - images\
   ...
   [ interface.py, process_cells.py, etc]
 ```
