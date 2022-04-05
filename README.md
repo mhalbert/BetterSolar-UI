@@ -13,13 +13,13 @@ Our goal is to create a user-friendly experience for a historically tedious, tim
 ### Screenshots
 
 #### Home Page Window:
-![](demo_homepage.png) 
+![](readmepics/homepage.png)
 
 #### Results Window:
-![](demo_results.png)
+![](readmepics/demo_results.png)
 
 #### Image Review Window:
-![](demo_image.png)
+![](readmepics/demo_image.png)
 
 
 ## Installation
