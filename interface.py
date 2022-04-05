@@ -357,8 +357,11 @@ def home_page():
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
                 prev=True
-        if event == 'View Previous Results' and prev==True:
-            results_window(output_mods, values['-MODEL-'])
+        if event == 'View Previous Results':
+            if not prev:
+                results_window([x.replace('.jpg', '') for x in file_list], values['-MODEL-'])
+            else:
+                results_window(output_mods, values['-MODEL-'])
         if event == "Preview":
             if values['-ALL-'] == True:
                 folder = values['-FOLDER-']
