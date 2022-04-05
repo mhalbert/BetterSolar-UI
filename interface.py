@@ -139,7 +139,7 @@ def results_window(module_names, model):
         [sg.Text('_'*window_width,font=font,pad=(None,5), background_color = background_color)],
         [sg.Text(module_name, background_color = background_color, font=font_stats, key='-NAME-' ),
             sg.Text('Grade', key='-GRADE-', font=font_stats, background_color = background_color)],
-        [sg.Text('Select a cell below o view results.',font=font,  background_color = background_color )],
+        [sg.Text('Select a cell below to view results.',font=font,  background_color = background_color )],
         [listbox_col, info_col],
         [sg.Text('_'*window_width, font=font, pad=(None,5), background_color = background_color)],
         [sg.Text('Preview', font=header_font,  background_color = background_color)],
@@ -215,8 +215,8 @@ def home_page():
     window_height=750
 
     default_folder = 'demoinput'
-    default_files = (glob2.glob(default_folder+'/*'))
-    file_list=[]
+    default_files = sorted(glob2.glob(default_folder+'/*'))
+    file_list = []
     for files in default_files:
         file_list.append(files.split('/')[1])
 

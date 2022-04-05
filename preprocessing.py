@@ -15,6 +15,8 @@ def preprocessing(images):
         # skip if path has already been created
         if os.path.isdir(save_path):
             continue
+
+        print(save_path)
         os.makedirs(save_path, exist_ok=True)
         h, w = 6, 10                                       # for demo purposes... TODO: figure out automating
         try:
