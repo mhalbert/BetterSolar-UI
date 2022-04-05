@@ -1,1 +1,1 @@
-{"crack": 29.7209, "contact": 1.4831, "interconnect": 0.0, "corrosion": 0.0, "has_crack": true, "has_contact_defect": false, "has_corrosion": false}
+{"crack": 29.7209, "contact": 1.4831, "interconnect": 0.0, "corrosion": 0.0, "has_crack": true, "has_contact_defect": false, "has_interconnect_defect": true, "has_corrosion": false}
