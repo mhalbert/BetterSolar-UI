@@ -160,9 +160,9 @@ def results_window(module_names, model):
         if button == '-FOLDER LIST-':
             cells = sorted(os.listdir(output_path + values['-FOLDER LIST-'] + '/'+ cells_path))
             window['-CELLS LIST-'].update(cells)
-            window['-NAME-'].update('Module ' + values['-FOLDER LIST-'] +': ')
+            window['-NAME-'].update('Module  ' + values['-FOLDER LIST-'] +': ')
             stats = (file_manager.get_json_stats(output_path,values['-FOLDER LIST-'],module=True))
-            window['-GRADE-'].update('FAIL' if stats['rating'] == False else 'PASS')
+            window['-GRADE-'].update('*FAIL*' if stats['rating'] == False else '*PASS*')
             window['-CRACKED-'].update(stats['crack'])
             window['-CONTACT-'].update(stats['contact'])
             window['-INTERCONNECT-'].update(stats['interconnect'])
@@ -216,7 +216,6 @@ def home_page():
     for files in default_files:
         file_list.append(files.split('/')[1])
 
-    print(default_files)
     file_select_layout = [
         [sg.Text('Upload Files',  background_color = section_color, font=header_font)],
         [sg.Text('Upload a folder of module images here to process.',  background_color = section_color, font=font)],
@@ -344,16 +343,16 @@ def home_page():
                 # print(ntpath.basename(folder))
                 # print(files)
                 image_paths = preprocessing(files)
-
                 # create grading criteria list
                 grading_criteria = [values['-CRACK %-'], values['-CRACK #-'],
                                     values['-CONTACT %-'], values['-CONTACT #-'],
                                     values['-INTERCONNECT %-'], values['-INTERCONNECT #-'],
                                     values['-CORROSION %-'], values['-CORROSION #-']]
-
+                sg.popup_animated('popup.PNG','processing - please wait', text_color='white', font=font, background_color='#e8995d')
                 # pass those to the processing algorithm
                 output_mods = process_cells(image_paths, [int(x) for x in grading_criteria],
                                             model_name=values['-MODEL-']+'.pth')
+                sg.popup_animated(None)
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
                 prev=True
