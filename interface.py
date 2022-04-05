@@ -359,7 +359,7 @@ def home_page():
                 prev=True
         if event == 'View Previous Results':
             if not prev:
-                results_window([x.replace('.jpg', '') for x in file_list], values['-MODEL-'])
+                results_window(os.listdir('demoout'), values['-MODEL-'])
             else:
                 results_window(output_mods, values['-MODEL-'])
         if event == "Preview":
