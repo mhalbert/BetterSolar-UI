@@ -1,14 +1,28 @@
 # BetterSolarUI 0.1.0
 Initial release of the Better Solar User Interface for American Made Solar Challenge Round 5: Software Track Semifinals.
 
-## What does our Application Do?
-Our goal is to create a user-friendly experience for a historically tedious, time-consuming image processing practice. [Insert ML model info]
+## Our Goals
+* _Automate_ image interpretation and provide valuable statistics.
+* Create a _user-friendly_ experience for a historically time-consuming image processing practice. 
+* Provide an _all-in-one_ system that can be _tailored_ to fit a consumer's needs.
 
-### System Workflow
+
+## What Does our Application Do?
+In the solar industry there is a consistent influx of valuable Electroluminescence (EL) images, which become 
+overwhelming and unmanagable. Inspecting these images easily becomes a tedious and monotonous process.
+
+Our solution focuses on utilizing Machine Learning techniques to process these Electroluminescene (EL)
+images and provide granular output with defect detection and localization of several defect categories. 
+This output allows for further analysis on defect impact of overal module power, valuable to the customer.
+
+(talk about defect categories somewhere??)
+
+
+### Basic System Workflow
 1. Upload **module** files and select custom processing settings on UI. (*See: 'Screenshots: Home Page Window'*)
-2. Module files fed into image preprocessing algorithm. Modules splits into individual cells.
-3. Cell files fed into cell level analysis and defect detection using our Machine Learning algorithm.
-4. Analysis and defect detection results collected and outputted, allowed for display and viewing via UI. (*See: 'Screenshots: Results Window'*)
+2. Module files are fed into image preprocessing algorithm. Modules are split into individual cells.
+3. Cell files processed with our ML cell level analysis and defect detection algorithms.
+4. Analysis and defect detection results collected and outputted, allowed for display and viewing. (*See: 'Screenshots: Results Window'*)
 
 ### Screenshots
 
@@ -24,9 +38,9 @@ Our goal is to create a user-friendly experience for a historically tedious, tim
 
 ## Installation
 
-Download ZIP above or use `gh repo clone mhalbert/BetterSolarUI`    <!--TODO! update for new repo!!!!!-->
+Download ZIP folder above or use `gh repo clone mhalbert/BetterSolarUI`    (TODO! update for new repo!!!!!)
 
-Using the above`requirements.txt` file, use the terminal to easily install dependencies onto your dedicated environment with:
+Using the above`requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
 `pip install -r requirements.txt`
 
 ## User Guide
@@ -38,16 +52,17 @@ BetterSolarUI
   - demoinput\
   - demoout\
   - models\
-  - images\
   ...
-  [ interface, processing, etc, files]
+  [ interface.py, process_cells.py, etc]
 ```
-* User Input files placed in: `demoinput`
-  * Example input found in `demoinput`. Input should be in module form. 
+* Input files placed in: `demoinput`
+  * Further example input found in `demoinput`. ![](readmepics/module.jpeg)
 * Processed files outputted in `demoout`
-  * Once images are processed and run through our algorithms, they are outputted here.
-* `models` ...
-* `images` ...
+  * Once images are processed and run through our algorithms, they are _automatically_ populated here.
+  * `demoout` folder contains folder(s) of processed module(s). ![](readmepics/demoout.png)
+* Defect Detection models placed in`models` 
+  * These models are avaliable for selection via the UI.
+
 
 
 ## Release History
