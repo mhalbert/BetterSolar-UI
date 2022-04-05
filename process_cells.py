@@ -58,7 +58,7 @@ cmaplist = [(0.001462, 0.000466, 0.013866, 1.0),
 cmap = matplotlib.colors.LinearSegmentedColormap.from_list('Custom', cmaplist, len(cmaplist))
 
 
-def process_cells(image_paths, model_name='model_97.pth'):
+def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
     checkpoint = torch.load(model_path + model_name, map_location='cpu')
     model.load_state_dict(checkpoint['model'])
     model.eval()
@@ -84,8 +84,8 @@ def process_cells(image_paths, model_name='model_97.pth'):
         os.makedirs(module_path + '/stitched/', exist_ok=True)
 
         # analysis criterion
-        crack_instances, contact_instances, corrosion_instances = 0, 0, 0
-        cell_crack, cell_contact, cell_corrosion = True, True, True
+        crack_instances, contact_instances, interconnect_instances, corrosion_instances = 0, 0, 0, 0
+        cell_crack, cell_contact, cell_interconnect, cell_corrosion = True, True, True, True
         total_defective = torch.zeros(4)
         PASS = True
 
@@ -131,13 +131,16 @@ def process_cells(image_paths, model_name='model_97.pth'):
             total_defective += torch.tensor([crack_portion, contact_portion, interconnect_portion, corrosion_portion])
 
             # add instance if single cell portion is of given size
-            if crack_portion > 5:
+            if crack_portion > grading_criteria[0]:
                 crack_instances += 1
                 cell_crack = True
-            if contact_portion > 10:
+            if contact_portion > grading_criteria[2]:
                 contact_instances += 1
                 cell_contact = True
-            if corrosion_portion > 10:
+            if interconnect_portion > grading_criteria[4]:
+                interconnect_instances += 1
+                cell_interconnect = True
+            if corrosion_portion > grading_criteria[6]:
                 corrosion_portion += 1
                 cell_corrosion = True
 
@@ -145,7 +148,8 @@ def process_cells(image_paths, model_name='model_97.pth'):
             defect_percentages = {'crack': round(float(crack_portion), 4), 'contact': round(float(contact_portion), 4),
                                   'interconnect': round(float(interconnect_portion), 4),
                                   'corrosion': round(float(corrosion_portion), 4), 'has_crack': cell_crack,
-                                  'has_contact_defect': cell_contact, 'has_corrosion': cell_corrosion}
+                                  'has_contact_defect': cell_contact, 'has_interconnect_defect': cell_interconnect,
+                                  'has_corrosion': cell_corrosion}
 
             with open(module_path + '/defect_percentages/' + name + '.json', 'w') as fp:
                 json.dump(defect_percentages, fp)
@@ -192,29 +196,39 @@ def process_cells(image_paths, model_name='model_97.pth'):
 
         total_defective = torch.div(total_defective, num_cells)
 
-        # TODO: set module pass/fail criteria
-        if total_defective[0] > 5:
+        # TODO: set total module percentage limits (if necessary)
+        if crack_instances >= grading_criteria[1]:
             PASS = False
-        elif total_defective[1] > 5:
+        elif contact_instances >= grading_criteria[3]:
             PASS = False
-        elif total_defective[2] > 2:
+        elif interconnect_instances >= grading_criteria[5]:
             PASS = False
-        elif total_defective[3] > 5:
+        elif corrosion_instances >= grading_criteria[7]:
             PASS = False
+        # elif total_defective[0] > 5:
+        #     PASS = False
+        # elif total_defective[1] > 5:
+        #     PASS = False
+        # elif total_defective[2] > 2:
+        #     PASS = False
+        # elif total_defective[3] > 5:
+        #     PASS = False
 
         total_defective = total_defective.numpy()
         print('Module ' + module_name + ': ' + str(total_defective))
         print('Crack Instances: ' + str(crack_instances))
         print('Contact Defect Instances: ' + str(contact_instances))
+        print('Interconnect Defect Instances: ' + str(interconnect_instances))
         print('Corrosion Defect Instances: ' + str(corrosion_instances))
         print('Pass: ' + str(PASS))
 
         # creates json to save defect percentage per class category
-        module_defect_stats = {'crack': round(float(total_defective[0]), 4), 'contact': round(float(total_defective[1]), 4),
+        module_defect_stats = {'crack': round(float(total_defective[0]), 4),
+                               'contact': round(float(total_defective[1]), 4),
                                'interconnect': round(float(total_defective[2]), 4),
                                'corrosion': round(float(total_defective[3]), 4), 'crack_instances': crack_instances,
-                               'contact_instances': contact_instances, 'corrosion_instances': corrosion_instances,
-                               'rating': PASS}
+                               'contact_instances': contact_instances, 'interconnect_instances': interconnect_instances,
+                               'corrosion_instances': corrosion_instances, 'rating': PASS}
 
         with open(module_path + '/defect_percentages/' + module_name + '.json', 'w') as fp:
             json.dump(module_defect_stats, fp)
