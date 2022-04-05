@@ -14,11 +14,11 @@ import stitch_cells
 
 # editable parameters, set up to fit local file structure
 ##################################################
-image_path = 'images/'                # folder where images are
-model_path = 'models/'                # folder where model is stored
+image_path = 'images'                # folder where images are
+model_path = 'models'                # folder where model is stored
 # model_name = 'model_97.pth'           # trained model name
-save_path = 'demoout/'                # location to save figures
-defect_dir = 'defect_percentages/'    # location to save defect percentage jsons
+save_path = 'demoout'                # location to save figures
+defect_dir = 'defect_percentages'    # location to save defect percentage jsons
 ##################################################
 ################ model parameters ################
 pre_model = 'deeplabv3_resnet50'      # backbone model was trained on
@@ -59,7 +59,7 @@ cmap = matplotlib.colors.LinearSegmentedColormap.from_list('Custom', cmaplist, l
 
 
 def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
-    checkpoint = torch.load(model_path + model_name, map_location='cpu')
+    checkpoint = torch.load(os.path.join(model_path, model_name), map_location='cpu')
     model.load_state_dict(checkpoint['model'])
     model.eval()
     cnt = 0
@@ -72,16 +72,15 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
             continue
 
         cnt += 1
-        cells = sorted(glob2.glob(mod + '/*'))
-
+        cells = sorted(glob2.glob(os.path.join(mod, '*')))
         # create necessary paths
-        module_name = mod.split('/')[-2].split('.')[0]
-        module_path = save_path + module_name
+        module_name = os.path.basename(mod).split('.')[0]
+        module_path = os.path.join(save_path, module_name)
         all_modules.append(module_name)
         os.makedirs(module_path, exist_ok=True)
-        os.makedirs(module_path + '/defect_percentages/', exist_ok=True)
-        os.makedirs(module_path + '/cells/', exist_ok=True)
-        os.makedirs(module_path + '/stitched/', exist_ok=True)
+        os.makedirs(os.path.join(module_path, 'defect_percentages'), exist_ok=True)
+        os.makedirs(os.path.join(module_path, 'cells'), exist_ok=True)
+        os.makedirs(os.path.join(module_path, 'stitched'), exist_ok=True)
 
         # analysis criterion
         crack_instances, contact_instances, interconnect_instances, corrosion_instances = 0, 0, 0, 0
@@ -151,10 +150,10 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
                                   'has_contact_defect': cell_contact, 'has_interconnect_defect': cell_interconnect,
                                   'has_corrosion': cell_corrosion}
 
-            with open(module_path + '/defect_percentages/' + name + '.json', 'w') as fp:
+            with open(os.path.join(module_path, 'defect_percentages', name + '.json'), 'w') as fp:
                 json.dump(defect_percentages, fp)
 
-            cell_crack, cell_contact, cell_corrosion = False, False, False
+            cell_crack, cell_contact, cell_interconnect, cell_corrosion = False, False, False, False
 
             orig_img = (img * .2) + .5
             nodef = np.ma.masked_where(nodef == 0, nodef)
@@ -177,10 +176,10 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
             plt.imshow(orig_img[0][0], cmap='gray', vmin=0, vmax=1)
             plt.imshow(nodef, cmap=cmap, vmin=0, vmax=4, alpha=.3)
             plt.axis('off')
-            plt.savefig(module_path + '/cells/' + name + '.jpg', bbox_inches='tight', transparent=True, pad_inches=0)
+            plt.savefig(os.path.join(module_path, 'cells', name + '.jpg'), bbox_inches='tight', transparent=True, pad_inches=0)
             plt.clf()
 
-        cell_glob = sorted(glob2.glob(module_path + '/cells/*'))
+        cell_glob = sorted(glob2.glob(os.path.join(module_path, 'cells', '*')))
         num_cells = len(cell_glob)
 
         if num_cells == 36:
@@ -230,7 +229,7 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
                                'contact_instances': contact_instances, 'interconnect_instances': interconnect_instances,
                                'corrosion_instances': corrosion_instances, 'rating': PASS}
 
-        with open(module_path + '/defect_percentages/' + module_name + '.json', 'w') as fp:
+        with open(os.path.join(module_path, 'defect_percentages', module_name + '.json'), 'w') as fp:
             json.dump(module_defect_stats, fp)
 
     return all_modules

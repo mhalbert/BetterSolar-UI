@@ -681,8 +681,8 @@ def CellCropComplete(image_file, save_path, NumCells_x=12, NumCells_y=6, corners
 
             # left to right -> NumCells_x * i2 + i3 + 1
             # tau backwards -> NumCells_y * i3 + NumCells_y - i2
-            cv2.imwrite(save_path + save_path.split('/')[1] + '_' + f"{(NumCells_x * i2 + i3 + 1):02d}"
-                        + '.jpg', DisplayImage_CellCropped)
+            cv2.imwrite(os.path.join(save_path, os.path.basename(save_path) + '_' + f"{(NumCells_x * i2 + i3 + 1):02d}"
+                        + '.jpg'), DisplayImage_CellCropped)
             # cv2.imwrite(filepath_cell_images_enhanced + '/cell_' + str(10 * i2 + i3 + 1) + '.jpg',
             #             DisplayImage_CellCropped * 5)
     # print('\nBeta version - final version to be developed\n')

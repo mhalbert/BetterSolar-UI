@@ -158,7 +158,7 @@ def results_window(module_names, model):
         if button == sg.WIN_CLOSED:
             break
         if button == '-FOLDER LIST-':
-            cells = sorted(os.listdir(output_path + values['-FOLDER LIST-'] + '/'+ cells_path))
+            cells = sorted(os.listdir(os.path.join(output_path, values['-FOLDER LIST-'], cells_path)))
             window['-CELLS LIST-'].update(cells)
             window['-NAME-'].update('Module  ' + values['-FOLDER LIST-'] +': ')
             stats = (file_manager.get_json_stats(output_path,values['-FOLDER LIST-'],module=True))
@@ -211,10 +211,10 @@ def home_page():
     window_height=750
 
     default_folder = 'demoinput'
-    default_files = sorted(glob2.glob(default_folder+'/*'))
+    default_files = sorted(glob2.glob(os.path.join(default_folder, '*')))
     file_list = []
     for files in default_files:
-        file_list.append(files.split('/')[1])
+        file_list.append(os.path.basename(files))
 
     file_select_layout = [
         [sg.Text('Upload Files',  background_color = section_color, font=header_font)],
@@ -225,10 +225,10 @@ def home_page():
         [sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
     ]
 
-    models = glob2.glob('models/*.pth')
+    models = glob2.glob(os.path.join('models', '*.pth'))
     model_names = []
     for model in models:
-        model_names.append(model.split('/')[1].split('.')[0])
+        model_names.append(os.path.basename(model).split('.')[0])
 
     default_percentages = ['8','10','5','15']
     default_cells = ['2','5','2','8']
@@ -320,7 +320,7 @@ def home_page():
             break
         if event == '-FOLDER-':
             folder = values['-FOLDER-']
-            files = sorted(glob2.glob(folder + '/*'))
+            files = sorted(glob2.glob(os.path.join(folder, '*')))
             file_list=[]
             for file in files:
                 file_list.append(ntpath.basename(file))
@@ -329,9 +329,9 @@ def home_page():
             folder = values['-FOLDER-']
             if values['-ALL-'] == True:
                 # files = file_manager.get_filenames(folder,file_list)
-                files = sorted(glob2.glob(folder + '/*'))
+                files = sorted(glob2.glob(os.path.join(folder, '*')))
             else:
-                all_files = sorted(glob2.glob(folder + '/*'))
+                all_files = sorted(glob2.glob(os.path.join(folder, '*')))
                 files = []
                 for value in values['-FILES LIST-']:
                     files.append([file for file in all_files if value in file][0])
@@ -364,13 +364,13 @@ def home_page():
         if event == "Preview":
             if values['-ALL-'] == True:
                 folder = values['-FOLDER-']
-                files = sorted(glob2.glob(folder + '/*'))
+                files = sorted(glob2.glob(os.path.join(folder, '*')))
                 file_list=[]
                 for file in files:
                     file_list.append(ntpath.basename(file))
             else:
                 file_list = values['-FILES LIST-']
-            path = values['-FOLDER-'] + '/'
+            path = values['-FOLDER-']
             if not file_list:
                 sg.Popup('Select a file to preview.',font=font, no_titlebar=True)
             else:
@@ -379,7 +379,7 @@ def home_page():
                 window['FILENAME'].update(file_list[0])
         if event == SYMBOL_DOWN and (len(values['-FILES LIST-'])>1 or values['-ALL-'] == True):
             image_counter += 1
-            path = values['-FOLDER-'] + '/'
+            path = values['-FOLDER-']
             num_files=len(file_list)
             if image_counter >= num_files:
                 image_counter -= num_files
@@ -388,7 +388,7 @@ def home_page():
             window['-IMAGE-'].update(data=bio.getvalue())
         if event == SYMBOL_UP and (len(values['-FILES LIST-'])>1 or values['-ALL-'] == True):
             image_counter -= 1
-            path = values['-FOLDER-'] + '/'
+            path = values['-FOLDER-']
             num_files=len(file_list)
             if image_counter < 0:
                 image_counter = num_files + image_counter

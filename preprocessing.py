@@ -10,7 +10,7 @@ def preprocessing(images):
     new_paths = []
     # run through all modules, chop into cells
     for image in images:
-        save_path = 'images/' + image.split('/')[-1].split('.')[0] + '/'
+        save_path = os.path.join('images', os.path.basename(image).split('.')[0])
         new_paths.append(save_path)
         # skip if path has already been created
         if os.path.isdir(save_path):
