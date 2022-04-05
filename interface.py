@@ -348,8 +348,16 @@ def home_page():
                 # print(ntpath.basename(folder))
                 # print(files)
                 image_paths = preprocessing(files)
+
+                # create grading criteria list
+                grading_criteria = [values['-CRACK %-'], values['-CRACK #-'],
+                                    values['-CONTACT %-'], values['-CONTACT #-'],
+                                    values['-INTERCONNECT %-'], values['-INTERCONNECT #-'],
+                                    values['-CORROSION %-'], values['-CORROSION #-']]
+
                 # pass those to the processing algorithm
-                output_mods = process_cells(image_paths, model_name=values['-MODEL-']+'.pth')
+                output_mods = process_cells(image_paths, [int(x) for x in grading_criteria],
+                                            model_name=values['-MODEL-']+'.pth')
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
 
