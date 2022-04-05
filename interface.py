@@ -139,7 +139,7 @@ def results_window(module_names, model):
         [sg.Text('_'*window_width,font=font,pad=(None,5), background_color = background_color)],
         [sg.Text(module_name, background_color = background_color, font=font_stats, key='-NAME-' ),
             sg.Text('Grade', key='-GRADE-', font=font_stats, background_color = background_color)],
-        [sg.Text('Select a cell below to view results.',font=font,  background_color = background_color )],
+        [sg.Text('Select a module below to view results.',font=font,  background_color = background_color )],
         [listbox_col, info_col],
         [sg.Text('_'*window_width, font=font, pad=(None,5), background_color = background_color)],
         [sg.Text('Preview', font=header_font,  background_color = background_color)],
@@ -179,7 +179,7 @@ def results_window(module_names, model):
         if button == 'Save Results':
             try:
                 saved = save_results.generate_report()
-                sg.Popup('Results saved!', no_titlebar = True)
+                sg.Popup('TODO', no_titlebar = True)
             except:
                 sg.Popup('An issue occured, could not save results.')
         if button == 'Return to Home':
@@ -309,14 +309,14 @@ def home_page():
         [file_select_col,input_display_col],
         [model_select_col],
         [sg.Text( '_' * window_width, font='Sathu 12 bold')],
-        [sg.Button('Run', size=(5,1),font=button_font, pad=(5,10),  button_color = '#cf3f32')],
+        [sg.Button('Run', size=(5,1),font=button_font, pad=(5,10),  button_color = '#cf3f32'), sg.Button('View Previous Results',font=button_font, pad=(5,10))],
         [sg.Button('Back to Menu', font = button_font, pad=(5,1))],
         [sg.Text('', size=(window_width,1), font = 'Sathu 22', text_color = 'white', background_color = banner_color, justification = 'center', pad=((1,1),(10,1)))],
     ]
 
     window = sg.Window('Home', layout, size=(window_width,window_height))
     image_counter = 0
-
+    prev = False
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -360,7 +360,9 @@ def home_page():
                                             model_name=values['-MODEL-']+'.pth')
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
-
+                prev=True
+        if event == 'View Previous Results' and prev==True:
+            results_window(output_mods, values['-MODEL-'])
         if event == "Preview":
             if values['-ALL-'] == True:
                 folder = values['-FOLDER-']
@@ -368,7 +370,6 @@ def home_page():
                 file_list=[]
                 for file in files:
                     file_list.append(ntpath.basename(file))
-
             else:
                 file_list = values['-FILES LIST-']
             path = values['-FOLDER-'] + '/'
