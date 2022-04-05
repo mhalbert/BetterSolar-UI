@@ -53,6 +53,8 @@ BetterSolarUI
 ```
 * Input files placed in: `demoinput`
   * Further example input found in `demoinput`. ![](readmepics/module.jpeg)
+* Cell-cut modules outputted in: `images`
+  * Pre-cut cell images may be used, just place them in `images\{module_name}\`, they will not get overwritten
 * Processed files outputted in `demoout`
   * Once images are processed and run through our algorithms, they are _automatically_ populated here.
   * `demoout` folder contains folder(s) of processed module(s). ![](readmepics/demoout.png)
