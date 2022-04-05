@@ -22,6 +22,7 @@ from process_cells import process_cells
 # TODO: check linux and windows comp.
 # add model selection option and feed into process_cells
 #update contact email
+
 UP =    '▲'
 RIGHT = '►'
 DOWN =  '▼'
@@ -399,9 +400,24 @@ def home_page():
     window.close()
     return
 
+def get_scaling():
+    # called before window created
+    root = sg.tk.Tk()
+    scaling = root.winfo_fpixels('1i')/72
+    root.destroy()
+    return scaling
 
 def main():
-    #print(sg.Text.fonts_installed_list())
+    # Find the number in original screen when GUI designed.
+    my_scaling = 1.0                    # call get_scaling()
+    my_width, my_height = 1440, 900     # call sg.Window.get_screen_size()
+    # Get the number for new screen
+    scaling_old = get_scaling()
+    width, height = sg.Window.get_screen_size()
+
+    scaling = scaling_old * min(width / my_width, height / my_height)
+
+    sg.set_options(scaling=scaling)
 
     my_new_theme = {'BACKGROUND': '#e4e4f0',
                     'TEXT': '#000000',
@@ -426,10 +442,10 @@ def main():
         #[sg.Frame('',image_layout, size=(600,315), pad=(10,10))],
         [sg.Button('Launch', font=button_font, pad=((1,1),(40,1)))],
         [sg.Button('Contact Us', font=button_font, pad=((1,1),(10,1)))],
-        [sg.Text('Better Solar, 2022', size=(500,1), font = 'Sathu 12', text_color = 'white', background_color = banner_color, justification = 'center', pad=((1,1),(75,1)))],
+        [sg.Text('Better Solar, 2022', size=(500,1), font = 'Sathu 10', text_color = 'white', background_color = banner_color, justification = 'center', pad=((1,1),(70,1)))],
     ]
 
-    window = sg.Window("Better Solar", layout, size=(700, 275), alpha_channel=1.0, grab_anywhere=True, element_justification='center')
+    window = sg.Window("Better Solar", layout, size=(700, 285), alpha_channel=1.0, grab_anywhere=True, element_justification='center')
 
     while True:
         button, values = window.read()
