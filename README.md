@@ -1,5 +1,5 @@
 # BetterSolarUI 0.1.0
-Initial release of the Better Solar User Interface for American Made Solar Challenge Round 5: Software Track Semifinals.
+Initial release of the Better Solar User Interface for American Made Solar Prize Round 5: Software Track SET! stage.
 
 ## Our Goals
 * _Automate_ image interpretation and provide valuable statistics.
@@ -16,11 +16,21 @@ detect, localize, and classify numerous defects that can originate in manufactur
 or following field exposure. 
 
 At this point, the software can effectively provide granular output with defect detection and localization of 
-the various defects shown below. (*See: 'Screenshots: Defect Types'*) This output allows for further analysis on 
+the various defects shown below. This output allows for further analysis on 
 defect impact on module outputs, valuable to the customer. Eventually, our solution will provide this feedback on 
 the magnitude of the problem (e.g., its impact on energy yield) and provide suggested corrective actions both in 
 a manufacturing or a field-based setting.
 
+![](readmepics/defecttypes.png)
+
+## Table of Contents:
+* [Basic System Workflow](#Basic-System-Workflow)
+* [Interface Screenshots](#Interface-Screenshots)
+* [User Guide](#User-Guide)
+  * [Installation](#Installation)
+  * [Run Software](#Run-Software)
+* [Release History](#Release-History)
+* [Contact Us](#Contact-Us)
 
 ### Basic System Workflow
 1. Upload **module** files and select custom processing settings on UI. (*See: 'Screenshots: Home Page Window'*)
@@ -28,24 +38,32 @@ a manufacturing or a field-based setting.
 3. Cell files processed with our ML cell level analysis and defect detection algorithms.
 4. Analysis and defect detection results collected and outputted, allowed for display and viewing. (*See: 'Screenshots: Results Window'*)
 
-### Screenshots
+### Interface Screenshots
 
-#### Defect Types:![](readmepics/defecttypes.png)
-#### Home Page Window:![](readmepics/homepage.png)
+#### Home Page Window:![](readmepics/home.png)
 #### Results Window:![](readmepics/demo_results.png)
 #### Image Review Window:![](readmepics/demo_image.png)
 
-
-## Installation
-
-Download ZIP folder above or use `gh repo clone mhalbert/BetterSolarUI`    (TODO! update for new repo!!!!!)
-
-Using the above`requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
-`pip install -r requirements.txt`
-
-
 ## User Guide
 (For initial 0.1.0 Release of BetterSolarUI)
+
+### Installation
+
+To run this project, install it locally on your machine. Download ZIP folder above or use:
+```sh 
+$ gh repo clone mhalbert/BetterSolarUI (TODO UPDATE)
+```
+
+Using the above`requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
+```sh
+$ pip install -r requirements.txt
+```
+
+
+### Run Software
+```sh
+$ python3 interface.py
+```
 
 Folder Structure:
 ```
@@ -65,18 +83,15 @@ BetterSolarUI
   * Once images are processed and run through our algorithms, they are _automatically_ populated here.
   * `demoout` folder contains folder(s) of processed module(s). ![](readmepics/demoout.png)
 * Defect Detection models placed in`models` 
-  * These models are avaliable for selection via the UI.
-  * The current available models both find cracks, contact interruptions, and resistive interconnect defects. 
-  * One of the models also finds contact corrosion, and the other highlights interconnect brightspots.
-
+  * Curent two models avaliable for selection via the UI:
+    * `defect+brightspot.pth`: cracks, contact interruptions, resistive interconnect defects and highlights _interconnect brightspots_.
+    * `defect+corrosion.pth`: cracks, contact interruptions, resistive interconnect defects and _contact corrosion_.
 
 
 ## Release History
 * 0.1.0
-  * Initial Release for SET! Submission of American Made Solar Challenge Round 5: Software Track
-
-## License
-
+  * Initial Release for SET! Submission of American Made Solar Prize Round 5: Software Track SET!
+  
 ## Contact Us
 Email us at _contact@bettersolargroup.com_. 
 

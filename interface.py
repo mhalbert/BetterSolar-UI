@@ -348,7 +348,7 @@ def home_page():
                                     values['-CONTACT %-'], values['-CONTACT #-'],
                                     values['-INTERCONNECT %-'], values['-INTERCONNECT #-'],
                                     values['-CORROSION %-'], values['-CORROSION #-']]
-                sg.popup_animated('popup.PNG','processing - please wait', text_color='white', font=font, background_color='#e8995d')
+                sg.popup_animated('popup.PNG','processing - please wait', text_color='white', font=font, background_color='#29298c')
                 # pass those to the processing algorithm
                 output_mods = process_cells(image_paths, [int(x) for x in grading_criteria],
                                             model_name=values['-MODEL-']+'.pth')
