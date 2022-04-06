@@ -52,7 +52,7 @@ are both in yellow (shown in different model selections)_
 (For initial 0.1.0 Release of BetterSolarUI)
 
 ### Installation
-_* (installation has been tested on Python 3.7 and up.)_
+_* (installation has been tested on Python 3.7 and up on Windows, Linux, and MacOSX)_
 
 To run this project, install it locally on your machine. Use:
 * Using GitHub CLI:
