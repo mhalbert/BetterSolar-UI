@@ -104,7 +104,7 @@ BetterSolarUI
   * Once images are processed and run through our algorithms, they are _automatically_ populated here.
   * `demoout` folder contains folder(s) of processed module(s). ![](readmepics/demoout.png)
 * Defect Detection models placed in`models` 
-  * Curent two models avaliable for selection via the UI:
+  * Currently two models are avaliable for selection via the UI:
     * `defect+brightspot.pth`: cracks, contact interruptions, resistive interconnect defects and highlights _interconnect brightspots_.
     * `defect+corrosion.pth`: cracks, contact interruptions, resistive interconnect defects and _contact corrosion_.
 
