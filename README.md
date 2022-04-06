@@ -30,6 +30,7 @@ a manufacturing or a field-based setting.
   * [Installation](#Installation)
   * [Run Software](#Run-Software)
 * [Release History](#Release-History)
+* [Notable Future Plans](#Notable-Future-Plans)
 * [Contact Us](#Contact-Us)
 
 ### Basic System Workflow
@@ -91,6 +92,14 @@ BetterSolarUI
 ## Release History
 * 0.1.0
   * Initial Release for SET! Submission of American Made Solar Prize Round 5: Software Track SET!
+
+## Notable Future Plans
+* Automated Detection of Module Size (e.g. 6x10, 60 cell) 
+* Various Bit Depth Accomodation
+* Expand Image Preprocessing to include:
+  * Lens distortion (e.g. Fisheye Distortion)
+  * Intensity Normalization
+  * Background corrections
   
 ## Contact Us
 Email us at _contact@bettersolargroup.com_. 
