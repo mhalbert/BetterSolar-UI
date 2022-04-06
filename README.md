@@ -52,7 +52,7 @@ are both in yellow (shown in different model selections)_
 (For initial 0.1.0 Release of BetterSolarUI)
 
 ### Installation
-_* (installation has been tested on Python 3.6 and up.)_
+_* (installation has been tested on Python 3.7 and up.)_
 
 To run this project, install it locally on your machine. Use:
 * Using GitHub CLI:
@@ -72,6 +72,8 @@ IMPORTANT NOTE: if using an Anaconda environment, this must be ran before the re
 ```sh
 conda install -c conda-forge pyhull
 ```
+_* there still seems to be an issue with this package using Anaconda on Windows. Please reach out if you have trouble getting an environment
+set up_
 
 Using the included `requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
 ```sh
