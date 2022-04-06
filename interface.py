@@ -109,9 +109,8 @@ def results_window(module_names, model):
     banner_color = '#4d4d73'
     background_color = '#ebecf5'
     font_highlight = '#f0efbb'
-    window_width=500
+    window_width=520
     window_height=600
-    scale()
 
     t = time.localtime()
     current_time=time.strftime("%H:%M:%S", t)
@@ -159,7 +158,7 @@ def results_window(module_names, model):
         [sg.Text('Select a module, or a cell above to preview.', font=font,  background_color = background_color)],
         [sg.Button('Module'), sg.Button('Selected Cell')],
         [sg.Text('_'*window_width,font=font,pad=(None,5),  background_color = background_color)],
-        [sg.Button('Save Results')],
+        #[sg.Button('Save Results')],
         [sg.Button('Return to Home')]
     ]
 
@@ -233,7 +232,7 @@ def home_page():
     file_select_layout = [
         [sg.Text('Upload Files',  background_color = section_color, font=header_font)],
         [sg.Text('Upload a folder of module images here to process.',  background_color = section_color, font=font)],
-        [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(40,1), enable_events=True,key='-FOLDER-', default_text=default_folder), sg.FolderBrowse(font=button_font, pad=(10,10), )],
+        [sg.Text('Folder:', font = font, pad=(10,10), background_color = section_color), sg.InputText(size=(35,1), enable_events=True,key='-FOLDER-', default_text=default_folder), sg.FolderBrowse(font=button_font, pad=(10,10), )],
         [sg.Text('File(s):', font = font, pad=((10,1),(1,1)), background_color = section_color)], #sg.Text('Manually select from below or check "Select All."', font=info_font, background_color = section_color)],
         [sg.Listbox(file_list, enable_events = True, font = listbox_font, select_mode = 'multiple', size = (40,15), key = "-FILES LIST-", pad=(10,1))],
         [sg.Checkbox('Select All', enable_events = True, key = '-ALL-', default = False, background_color = section_color, font = font, pad = (10,1))],
@@ -297,8 +296,6 @@ def home_page():
         [sg.Button(SYMBOL_UP,pad=(5,5), auto_size_button=True, tooltip='Previous'),
             sg.Button(SYMBOL_DOWN,pad=(5,5),auto_size_button=True, tooltip='Next')],
         [sg.Button('Preview',font=button_font, pad=(5,5))],
-        #[sg.Checkbox('Preview All', enable_events = True, key = '-PREVIEW ALL-', default = False, background_color = section_color, font = 'Sathu 11', pad = (5,5))],
-
     ]
     image_layout = [[sg.Image(key='-IMAGE-')]]
     input_display_layout = [
@@ -362,11 +359,11 @@ def home_page():
                                     values['-CONTACT %-'], values['-CONTACT #-'],
                                     values['-INTERCONNECT %-'], values['-INTERCONNECT #-'],
                                     values['-CORROSION %-'], values['-CORROSION #-']]
-               # sg.popup_animated('popup.PNG','processing - please wait', text_color='white', font=font, background_color='#29298c')
+                sg.popup_animated('popup.PNG','processing - please wait', text_color='white', font=font, background_color='#29298c')
                 # pass those to the processing algorithm
                 output_mods = process_cells(image_paths, [int(x) for x in grading_criteria],
                                             model_name=values['-MODEL-']+'.pth')
-               # sg.popup_animated(None)
+                sg.popup_animated(None)
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
                 prev=True
@@ -440,7 +437,7 @@ def main():
         [sg.Text('Better Solar, 2022', size=(500,1), font = 'Sathu 10', text_color = 'white', background_color = banner_color, justification = 'center', pad=((1,1),(70,1)))],
     ]
 
-    window = sg.Window("Better Solar", layout, size=(700, 285), alpha_channel=1.0, grab_anywhere=True, element_justification='center')
+    window = sg.Window("Better Solar", layout, size=(700, 275), alpha_channel=1.0, grab_anywhere=True, element_justification='center')
 
     while True:
         button, values = window.read()
