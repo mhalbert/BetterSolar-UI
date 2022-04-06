@@ -191,6 +191,8 @@ def results_window(module_names, model):
             window['-CORROSION-'].update(stats['corrosion'])
 
         if button == 'Selected Cell':
+            if not values['-CELLS LIST-']:
+                continue
             preview_window(output_path, values['-CELLS LIST-'][0], False)
         if button == 'Module':
             preview_window(output_path, values['-FOLDER LIST-'], True)
