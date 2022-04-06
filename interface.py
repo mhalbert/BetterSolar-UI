@@ -305,7 +305,7 @@ def home_page():
     model_layout = [
         [sg.Text('Processing Settings', background_color=section_color, font=header_font)],
         [sg.Text('Select a model from the drop down menu.', background_color=section_color, font=info_font)],
-        [sg.Combo(values=model_names, default_value=model_names[1], key='-MODEL-', tooltip=defect_categories, font=font,
+        [sg.Combo(values=model_names, default_value=model_names[0], key='-MODEL-', tooltip=defect_categories, font=font,
                   size=(20, 1), pad=((10, 50), (10, 10)))],
     ]
 
