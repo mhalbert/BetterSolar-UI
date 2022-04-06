@@ -414,7 +414,7 @@ def home_page():
                 prev = True
         if event == 'View Previous Results':
             if not prev:
-                results_window(os.listdir('demoout'), values['-MODEL-'])
+                results_window(sorted(os.listdir('demoout')), values['-MODEL-'])
             else:
                 results_window(output_mods, values['-MODEL-'])
         if event == "Preview":
