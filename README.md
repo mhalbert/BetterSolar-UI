@@ -65,7 +65,7 @@ $ git clone https://github.com/mhalbert/BetterSolarUI.git
 * Using python IDE w/ integrated source control/git support:
   * Find git clone support, paste ``` https://github.com/mhalbert/BetterSolarUI.git ```
  
-Requires python environment to run. Example environment setup instructions: https://docs.anaconda.com/anaconda/install/index.htmlhttps://docs.anaconda.com/anaconda/install/index.html
+Requires python environment to run. Example environment setup instructions: https://docs.anaconda.com/anaconda/install/index.html
 
 Using the included `requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
 ```sh
