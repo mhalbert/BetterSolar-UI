@@ -22,6 +22,9 @@ the magnitude of the problem (e.g., its impact on energy yield) and provide sugg
 a manufacturing or a field-based setting.
 
 ![](readmepics/defecttypes.png)
+_* The colors and groupings of defects in the application are consistent with this figure. Cracks are grouped into
+a red category, contact defects are labeled blue, interconnect failures are purple, and the brightspots and corrosion
+are both in yellow (shown in different model selections)_
 
 ## Table of Contents:
 * [Basic System Workflow](#Basic-System-Workflow)
@@ -50,12 +53,21 @@ a manufacturing or a field-based setting.
 
 ### Installation
 
-To run this project, install it locally on your machine. Download ZIP folder above or use:
+To run this project, install it locally on your machine. Use:
+* Using GitHub CLI:
 ```sh 
 $ gh repo clone mhalbert/BetterSolarUI (TODO UPDATE)
 ```
+* Using git in terminal/command line:
+```sh
+$ git clone https://github.com/mhalbert/BetterSolarUI.git
+```
+* Using python IDE w/ integrated source control/git support:
+  * Find git clone support, paste ``` https://github.com/mhalbert/BetterSolarUI.git ```
+ 
+Requires python environment to run. Example environment setup instructions: https://docs.anaconda.com/anaconda/install/index.html
 
-Using the above`requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
+Using the included `requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
 ```sh
 $ pip install -r requirements.txt
 ```
@@ -95,7 +107,8 @@ BetterSolarUI
 
 ## Notable Future Plans
 * Automated Detection of Module Size (e.g. 6x10, 60 cell) 
-* Various Bit Depth Accomodation
+* Various Bit Depth Imagery Accomodation
+* Include Additional Defect Types and Grading Criteria
 * Expand Image Preprocessing to include:
   * Lens distortion (e.g. Fisheye Distortion)
   * Intensity Normalization
