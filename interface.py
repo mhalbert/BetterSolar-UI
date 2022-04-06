@@ -134,6 +134,7 @@ def results_window(module_names, model):
     cells = []
     output_select_layout = [
         [sg.Combo(folder_list, enable_events=True, font='Arial 12', size=(30, 6), key="-FOLDER LIST-", pad=(10, 5))],
+        [sg.Text('Select a cell below to view results.', font=font, background_color=background_color)],
         [sg.Listbox(values=cells, enable_events=True, font='Arial 12', size=(30, 6), key="-CELLS LIST-", pad=(10, 5))],
     ]
     single_report_layout = [
@@ -209,6 +210,9 @@ def results_window(module_names, model):
                 sg.Popup('Results not saved. Are you sure?')
                 break
         if button == '-CELLS LIST-':  # list box item select
+            if not values['-CELLS LIST-']:
+                continue
+
             # display stats by updating window!
             stats = file_manager.get_json_stats(output_path, values['-CELLS LIST-'][0], False)
             window['-CRACKED-'].update(stats['crack'])
