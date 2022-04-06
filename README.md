@@ -52,30 +52,36 @@ are both in yellow (shown in different model selections)_
 (For initial 0.1.0 Release of BetterSolarUI)
 
 ### Installation
+_* (installation has been tested on Python 3.6 and up.)_
 
 To run this project, install it locally on your machine. Use:
 * Using GitHub CLI:
 ```sh 
-$ gh repo clone mhalbert/BetterSolarUI (TODO UPDATE)
+gh repo clone mhalbert/BetterSolarUI (TODO UPDATE)
 ```
 * Using git in terminal/command line:
 ```sh
-$ git clone https://github.com/mhalbert/BetterSolarUI.git
+git clone https://github.com/mhalbert/BetterSolarUI.git
 ```
 * Using python IDE w/ integrated source control/git support:
   * Find git clone support, paste ``` https://github.com/mhalbert/BetterSolarUI.git ```
  
 Requires python environment to run. Example environment setup instructions: https://docs.anaconda.com/anaconda/install/index.html
 
+IMPORTANT NOTE: if using an Anaconda environment, this must be ran before the requirements.txt file (dependency issues):
+```sh
+conda install -c conda-forge pyhull
+```
+
 Using the included `requirements.txt` file, use terminal to easily install dependencies onto your dedicated environment with:
 ```sh
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 
 ### Run Software
 ```sh
-$ python3 interface.py
+python3 interface.py
 ```
 
 Folder Structure:
