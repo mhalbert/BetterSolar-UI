@@ -16,7 +16,7 @@ def get_json_stats(output_path, filename, module):
     if module:
         path = os.path.join(output_path, (ntpath.splitext(filename))[0], 'defect_percentages', (ntpath.splitext(filename))[0] + '.json')
     else:
-        path = os.path.join(output_path, ((ntpath.splitext(filename)[0]).split('_',1))[0], 'defect_percentages', ntpath.splitext(filename)[0] + '.json')
+        path = os.path.join(output_path, (ntpath.splitext(filename))[0][:-3], 'defect_percentages', ntpath.splitext(filename)[0] + '.json')
 
     f = open(path)
     stats = json.loads(f.read())
@@ -41,7 +41,7 @@ def display_output(path, file, module):
         module_path = os.path.join(path, file, 'stitched', file + '_col.jpg')
         image = Image.open(module_path)
     else:
-        cells_path = os.path.join(path, (file.split('_', 1))[0], 'cells', file)
+        cells_path = os.path.join(path, file.replace('.jpg', '')[:-3], 'cells', file)
         image = Image.open(cells_path)
 
     image.thumbnail((633, 322))

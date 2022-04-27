@@ -1,5 +1,7 @@
 import PySimpleGUI as sg
 import os
+
+import torch.cuda
 from PIL import Image
 import io
 import base64
@@ -123,7 +125,7 @@ def results_window(module_names, model):
 
     t = time.localtime()
     current_time = time.strftime("%H:%M:%S", t)
-    output_path = 'demoout/'
+    output_path = 'out/'
     cells_path = 'cells/'
     defect_path = 'defect_percentages/'
     stitched_path = 'stitched/'
@@ -239,7 +241,7 @@ def home_page():
     window_height = 750
     scale()
 
-    default_folder = 'demoinput'
+    default_folder = 'input'
     default_files = sorted(glob2.glob(os.path.join(default_folder, '*')))
     file_list = []
     for files in default_files:
@@ -404,7 +406,7 @@ def home_page():
                 # sg.popup_animated('popup.PNG', 'processing - please wait', text_color='white', font=font, background_color='#29298c')
                 # pass those to the processing algorithm
                 output_mods = process_cells(image_paths, [int(x) for x in grading_criteria],
-                                            model_name=values['-MODEL-'] + '.pth')
+                                            model_name=values['-MODEL-'] + '.pth', use_gpu=torch.cuda.is_available())
 
                 # fix scaling issues
                 scale()
@@ -414,7 +416,7 @@ def home_page():
                 prev = True
         if event == 'View Previous Results':
             if not prev:
-                results_window(sorted(os.listdir('demoout')), values['-MODEL-'])
+                results_window(sorted(os.listdir('out')), values['-MODEL-'])
             else:
                 results_window(output_mods, values['-MODEL-'])
         if event == "Preview":

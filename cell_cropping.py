@@ -281,6 +281,7 @@ def extract_CellGridAndModuleCorners(CVImage, DisplayImage, NumCells_x, NumCells
                 event_num = 0
             # if the 'c' key is pressed, break from the loop
             elif key == ord("c"):
+                event_num = 0
                 break
 
         corners = order_ModuleCorners(refPt)
@@ -293,7 +294,7 @@ def extract_CellGridAndModuleCorners(CVImage, DisplayImage, NumCells_x, NumCells
 
     # cv2.imshow("Outline", image_Outline)
     # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
     if perspective_correct:
         # TODO:If module is not aligned with image edges apply a tranformation ****This step has been excluded****
         # image_Transformed = transform_Image(image_Original, corners*ratio)
@@ -659,7 +660,7 @@ def CellCropComplete(image_file, save_path, NumCells_x=12, NumCells_y=6, corners
                                                                                               NumCells_x, NumCells_y,
                                                                                               resize_height=500,
                                                                                               perspective_correct=False)
-    cv2.imwrite(save_path + save_path.split('/')[1] + '_module.jpg',
+    cv2.imwrite(os.path.join(save_path, os.path.basename(save_path) + '_module.jpg'),
                 DisplayImage[int(gridPoints[0, 1]):int(gridPoints[NumCells_x * (NumCells_y-1) + NumCells_x + NumCells_y + NumCells_x, 1]),
                 int(gridPoints[0, 0]):int(gridPoints[NumCells_x * (NumCells_y-1) + NumCells_x + NumCells_y + NumCells_x, 0])])
 

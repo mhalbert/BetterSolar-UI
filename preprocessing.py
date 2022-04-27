@@ -22,7 +22,7 @@ def preprocessing(images):
         try:
             n, f = pvi.pipelines.GetLensCorrectParams(image)
             FMpipeline(image, save_path, n, f, w, h, savesmall=False)
-        except ValueError:
+        except ValueError or cv2.error:
             try:
                 # temporary, gets bad automatic split
                 # if image.split('/')[1].split('.')[0] == 'M0004C000cd0':
@@ -40,6 +40,8 @@ Created on Thu Jan 30 10:29:52 2020
 
 @author: jlbraid
 """
+
+
 def FMpipeline(imagepath, savepath, n=None, f=None, numCols=None, numRows=None, savesmall=False, imgtype=''):
     """Performs full-size module image processing steps, including
         lens correction, planar indexing, and cell extraction, if desired.

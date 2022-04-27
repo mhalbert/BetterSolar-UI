@@ -17,7 +17,7 @@ import stitch_cells
 image_path = 'images'                # folder where images are
 model_path = 'models'                # folder where model is stored
 # model_name = 'model_97.pth'           # trained model name
-save_path = 'demoout'                # location to save figures
+save_path = 'out'                # location to save figures
 defect_dir = 'defect_percentages'    # location to save defect percentage jsons
 ##################################################
 ################ model parameters ################
@@ -27,38 +27,40 @@ threshold = .52                       # threshold for defect interpretation
 aux_loss = True                       # loss type model trained with
 ##################################################
 
-# PRELIMINARY MODEL SETUP
-# softmax layer for defect interpretation
-softmax = torch.nn.Softmax(dim=0)
 
-# this section loads in the weights of an already trained model
-model = torchvision.models.segmentation.__dict__[pre_model](aux_loss=aux_loss,
-                                                            pretrained=True)
+def process_cells(image_paths, grading_criteria, model_name='model_97.pth', use_gpu=False):
+    # PRELIMINARY MODEL SETUP
+    # softmax layer for defect interpretation
+    softmax = torch.nn.Softmax(dim=0)
 
-# changes last layer for output of appropriate class number
-if pre_model == 'deeplabv3_resnet50' or pre_model == 'deeplabv3_resnet101':
-    model.classifier = DeepLabHead(2048, num_classes)
-else:
-    num_ftrs_aux = model.aux_classifier[4].in_channels
-    num_ftrs = model.classifier[4].in_channels
-    model.aux_classifier[4] = torch.nn.Conv2d(num_ftrs_aux, num_classes, kernel_size=1)
-    model.classifier[4] = torch.nn.Conv2d(num_ftrs, num_classes, kernel_size=1)
+    # this section loads in the weights of an already trained model
+    model = torchvision.models.segmentation.__dict__[pre_model](aux_loss=aux_loss,
+                                                                pretrained=True)
 
-# transforms to put images through the model
-trans = t.Compose([t.ToTensor(), t.Normalize(mean=.5, std=.2)])
+    # changes last layer for output of appropriate class number
+    if pre_model == 'deeplabv3_resnet50' or pre_model == 'deeplabv3_resnet101':
+        model.classifier = DeepLabHead(2048, num_classes)
+    else:
+        num_ftrs_aux = model.aux_classifier[4].in_channels
+        num_ftrs = model.classifier[4].in_channels
+        model.aux_classifier[4] = torch.nn.Conv2d(num_ftrs_aux, num_classes, kernel_size=1)
+        model.classifier[4] = torch.nn.Conv2d(num_ftrs, num_classes, kernel_size=1)
 
-# create custom colormap for image visualizations [Black, Red, Blue, Purple, Orange]
-cmaplist = [(0.001462, 0.000466, 0.013866, 1.0),
-            (0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
-            (0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
-            (0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
-            (1.0, 0.4980392156862745, 0.0, 1.0)]
+    # transforms to put images through the model
+    trans = t.Compose([t.ToTensor(), t.Normalize(mean=.5, std=.2)])
 
-# create the new map
-cmap = matplotlib.colors.LinearSegmentedColormap.from_list('Custom', cmaplist, len(cmaplist))
+    # create custom colormap for image visualizations [Black, Red, Blue, Purple, Orange]
+    cmaplist = [(0.001462, 0.000466, 0.013866, 1.0),
+                (0.8941176470588236, 0.10196078431372549, 0.10980392156862745, 1.0),
+                (0.21568627450980393, 0.49411764705882355, 0.7215686274509804, 1.0),
+                (0.596078431372549, 0.3058823529411765, 0.6392156862745098, 1.0),
+                (1.0, 0.4980392156862745, 0.0, 1.0)]
 
+    # create the new color map
+    cmap = matplotlib.colors.LinearSegmentedColormap.from_list('Custom', cmaplist, len(cmaplist))
 
-def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
+    if use_gpu:
+        model = model.cuda()
     checkpoint = torch.load(os.path.join(model_path, model_name), map_location='cpu')
     model.load_state_dict(checkpoint['model'])
     model.eval()
@@ -100,6 +102,8 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
 
             im = Image.open(cell).convert('RGB')
             img = trans(im).unsqueeze(0)
+            if use_gpu:
+                img = img.cuda()
             output = model(img)['out']
 
             # threshold to determine defect vs. non-defect instead of softmax (custom for this model)
@@ -155,6 +159,10 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
 
             cell_crack, cell_contact, cell_interconnect, cell_corrosion = False, False, False, False
 
+            if use_gpu:
+                nodef = nodef.cpu()
+                img = img.cpu()
+                output_defect_percent = output_defect_percent.cpu()
             orig_img = (img * .2) + .5
             nodef = np.ma.masked_where(nodef == 0, nodef)
 
@@ -182,6 +190,7 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
         cell_glob = sorted(glob2.glob(os.path.join(module_path, 'cells', '*')))
         num_cells = len(cell_glob)
 
+        # currently hard coded, figure out way to automate this
         if num_cells == 36:
             h, w = 3, 12
         elif num_cells == 60:
@@ -227,7 +236,7 @@ def process_cells(image_paths, grading_criteria, model_name='model_97.pth'):
                                'interconnect': round(float(total_defective[2]), 4),
                                'corrosion': round(float(total_defective[3]), 4), 'crack_instances': crack_instances,
                                'contact_instances': contact_instances, 'interconnect_instances': interconnect_instances,
-                               'corrosion_instances': corrosion_instances, 'rating': PASS}
+                               'corrosion_instances': corrosion_instances, 'rating': PASS, 'criteria': grading_criteria}
 
         with open(os.path.join(module_path, 'defect_percentages', module_name + '.json'), 'w') as fp:
             json.dump(module_defect_stats, fp)
