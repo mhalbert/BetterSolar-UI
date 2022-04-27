@@ -202,7 +202,7 @@ def results_window(module_names, model):
         if button == 'Save Results':
             try:
                 saved = save_results.generate_report()
-                sg.Popup('TODO', no_titlebar=True)
+                sg.Popup('Output saved in "demoout" folder.', no_titlebar=True)
             except:
                 sg.Popup('An issue occured, could not save results.')
         if button == 'Return to Home':
