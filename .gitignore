@@ -1,7 +1,22 @@
 .idea/
 unused_models/
 Module_Images/
+All/
+demoimages/
+demoinput/
+demoout/
+does not work with pvimage/
+images/
 out/
+bad_images.csv
+Hail cracked cell data for ML analysis.csv
+Hail cracked cell data for ML analysis.xlsx
+interface (copy).py
+module_analysis.csv
+module_analysis.py
+remove_empty.py
+rename.py
+lens params/
 __pycache__/
 *.py[cod]
 *$py.class
