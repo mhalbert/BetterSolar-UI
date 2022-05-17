@@ -1,4 +1,4 @@
-import PySimpleGUI as sg
+import PySimpleGUIWeb as sg
 import os
 
 import torch.cuda
@@ -121,7 +121,7 @@ def results_window(module_names, model):
     font_highlight = '#f0efbb'
     window_width = 520
     window_height = 600
-    scale()
+    # scale()
 
     t = time.localtime()
     current_time = time.strftime("%H:%M:%S", t)
@@ -239,7 +239,7 @@ def home_page():
     border_width = 5
     window_width = 1200
     window_height = 750
-    scale()
+    # scale()
 
     default_folder = 'input'
     default_files = sorted(glob2.glob(os.path.join(default_folder, '*')))
@@ -409,7 +409,7 @@ def home_page():
                                             model_name=values['-MODEL-'] + '.pth', use_gpu=torch.cuda.is_available())
 
                 # fix scaling issues
-                scale()
+                # scale()
                 # sg.popup_animated(None)
                 # open results window with output paths.
                 results_window(output_mods, values['-MODEL-'])
@@ -470,12 +470,12 @@ def main():
                     'SLIDER_DEPTH': 0,
                     'PROGRESS_DEPTH': 0}
 
-    sg.theme_add_new('MainTheme', my_new_theme)
+    # sg.theme_add_new('MainTheme', my_new_theme)
     sg.theme('MainTheme')
     font = 'Sathu 12'
     button_font = 'Menlo 12'
     banner_color = '#4d4d73'
-    scale()
+    # scale()
     layout = [
         [sg.Text('Main Menu', font='Sathu 18', size=(700, 1), pad=((0, 0), (1, 30)), text_color='white',
                  background_color=banner_color, justification='center')],
